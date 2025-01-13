@@ -1,16 +1,20 @@
-const InputForm = ({ label, type, name, value, onChange,placeHolder }) => {
+const InputForm = ({ label, type, name, value, onChange, placeHolder, icono}) => {
     return (
         <div className="form-group">
-            <label>{label}</label>
-            <input
-                type={type}
-                className="bg-white rounded-lg py-2 px-4 block w-full appearance-none leading-normal focus:outline focus:shadow-black"
-                name={name}
-                value={value}
-                placeholder={placeHolder}
-                onChange={onChange}
-            />
+            {label && <label className="block mb-2 text-sm font-medium">{label}</label>}
+            <div className="flex items-center bg-white rounded-lg py-2 px-2 border border-gray-300">
+                {icono && (<div className="mr-2">{icono}</div>)}
+                <input
+                    type={type}
+                    className="bg-transparent flex-1 outline-none"
+                    name={name}
+                    value={value}
+                    placeholder={placeHolder}
+                    onChange={onChange}
+                />
+            </div>
         </div>
     );
 }
+
 export default InputForm;
