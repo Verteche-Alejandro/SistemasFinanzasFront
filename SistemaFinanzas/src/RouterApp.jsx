@@ -14,7 +14,7 @@ const RouterApp = () => {
   ];
 
   const protectedRoutes = [
-    { path: "/", page: <Principal /> },
+    { path: "/principal", page: <Principal /> },
   ];
 
   useEffect(() => {
