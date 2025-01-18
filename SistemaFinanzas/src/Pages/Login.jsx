@@ -1,9 +1,10 @@
 import Form from "../Layouts/Form"
 import InputForm from "../Components/Inputs/InputForm"
 import ButtonForm from "../Components/Buttons/ButtonForm"
-import { useState} from "react"
+import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { login } from "../Services/Auth"
+import { jwtDecode } from "jwt-decode";
 
 const Login = () => {
     const [user, setUser] = useState("");
@@ -13,16 +14,15 @@ const Login = () => {
 
     const Login = async () => {
         const rsp = await login(data);
-        if (rsp.token) {
-            if (rsp.status === 200) {
-                localStorage.setItem("token", rsp.token);
-                navigate("/principal");
-            } else {
-                navigate("/login");
-                setErrores(rsp.data.message);
-            }
+        console.log("Respuesta :", rsp);
+        if (rsp && rsp.token) {
+            const tokenDecoded = jwtDecode(rsp.token);
+            localStorage.setItem("token", tokenDecoded);
+            console.log("Token guardado", tokenDecoded);
+            navigate("/principal");
         } else {
             setErrores("Error en la solicitud");
+            navigate("/login");
         }
     }
 
@@ -67,6 +67,7 @@ const Login = () => {
                         </svg>
                         } />
                         <ButtonForm text={"Acceder"} type={"button"} onClick={Login} />
+                        {errores && (<p className="text-red-500 text-center">{errores}</p>)}
                     </Form>
                 </div>
             </div>
