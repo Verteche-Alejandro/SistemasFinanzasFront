@@ -4,7 +4,6 @@ import ButtonForm from "../Components/Buttons/ButtonForm"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { login } from "../Services/Auth"
-import { jwtDecode } from "jwt-decode";
 
 const Login = () => {
     const [user, setUser] = useState("");
@@ -16,9 +15,8 @@ const Login = () => {
         const rsp = await login(data);
         console.log("Respuesta :", rsp);
         if (rsp && rsp.token) {
-            const tokenDecoded = jwtDecode(rsp.token);
-            localStorage.setItem("token", tokenDecoded);
-            console.log("Token guardado", tokenDecoded);
+            localStorage.setItem("token", rsp.token);
+            console.log("Token guardado", rsp.token);
             navigate("/principal");
         } else {
             setErrores("Usuario o Contraseña incorrectos");

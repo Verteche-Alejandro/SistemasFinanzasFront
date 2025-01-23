@@ -1,4 +1,5 @@
 import Esquema from "../Layouts/Esquema"
+import TableTransac from "../Layouts/TableTransac"
 
 const Transacciones = () => {
     return (
@@ -14,6 +15,9 @@ const Transacciones = () => {
                     <div className="bg-green-500 text-white rounded p-4 text-center">
                         <p className="text-2xl font-bold">Egresos</p>
                         <p>Registra tus egresos</p>
+                    </div>
+                    <div className="flex flex-col gap-4 w-full">
+                        <TableTransac />
                     </div>
                 </div>
             </Esquema>
