@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import InputForm from "../Components/Inputs/InputForm";
 import Modal from "../Components/Modals/Modal";
 import { registrarTransaccion } from "../Services/Controllers/Transaccion";
-import { getCuentasByUsuarioId } from "../Services/Controllers/Cuenta";
-import { jwtDecode } from "jwt-decode";
 
 const NuevaTransac = ({ isOpen, onClose }) => {
     const [transaccion, setTransaccion] = useState({
@@ -13,42 +11,20 @@ const NuevaTransac = ({ isOpen, onClose }) => {
         cuenta_id: "",
         moneda_id: ""
     });
-    const [usuario_id, setUsuario_id] = useState(null);
     const [cuentas, setCuentas] = useState([]);
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (token) {
-            try {
-                const decoded = jwtDecode(token);
-                console.log("Decoded:", decoded);
-                setUsuario_id(decoded.usuario_id || "ID no encontrado");
-            } catch (error) {
-                console.error("Error al decodificar el token:", error);
-                setUsuario_id("Token inválido");
+        const fetchCuentas = () => {
+            let cuentasAlmacenadas = sessionStorage.getItem("cuentas");
+            if (cuentasAlmacenadas) {
+                setCuentas(JSON.parse(cuentasAlmacenadas));
             }
-        } else {
-            setUsuario_id("Token no encontrado");
+            else {
+                console.log("No se pudo encontrar las cuentas en session");
+            }
         }
-    }, []);
-
-    useEffect(() => {
-        const fetchCuentas = async () => {
-            if (usuario_id) {
-                try {
-                    const rsp = await getCuentasByUsuarioId(usuario_id);
-                    if (rsp) {
-                        setCuentas(rsp);
-                    } else {
-                        console.log("No hay cuentas disponibles");
-                    }
-                } catch (error) {
-                    console.error("Error en fetchCuentas:", error);
-                }
-            }
-        };
         fetchCuentas();
-    }, [usuario_id]);
+    }, [])
 
     const Registrar = async () => {
         let rsp = await registrarTransaccion(transaccion);
