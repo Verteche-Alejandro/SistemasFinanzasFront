@@ -1,4 +1,4 @@
-import { POST, GETBYID, DELETE } from '../Fetch';
+import { POST, GETBYID, DELETE,GET } from '../Fetch';
 
 export const getTransaccionesByCuenta = async (cuenta_id) => {
     try {
@@ -9,6 +9,16 @@ export const getTransaccionesByCuenta = async (cuenta_id) => {
         return [];
     }
 };
+
+export const getAllTransacciones = async () =>{
+    try {
+        let rsp = await GET("/controller/transacciones/alltransacciones");
+        return rsp || [];
+    } catch (error) {
+        console.error("Error en la solicitud GET en transaccion:", error);
+        return [];
+    }
+}
 
 export const registrarTransaccion = async (data) => {
     try {

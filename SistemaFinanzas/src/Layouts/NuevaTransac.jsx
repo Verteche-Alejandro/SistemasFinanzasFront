@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import InputForm from "../Components/Inputs/InputForm";
 import Modal from "../Components/Modals/Modal";
 import { registrarTransaccion } from "../Services/Controllers/Transaccion";
+import { getCuentasByUsuarioId } from "../Services/Controllers/Cuenta";
+import { jwtDecode } from "jwt-decode";
 
 const NuevaTransac = ({ isOpen, onClose }) => {
     const [transaccion, setTransaccion] = useState({
@@ -11,6 +13,42 @@ const NuevaTransac = ({ isOpen, onClose }) => {
         cuenta_id: "",
         moneda_id: ""
     });
+    const [usuario_id, setUsuario_id] = useState(null);
+    const [cuentas, setCuentas] = useState([]);
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            try {
+                const decoded = jwtDecode(token);
+                console.log("Decoded:", decoded);
+                setUsuario_id(decoded.usuario_id || "ID no encontrado");
+            } catch (error) {
+                console.error("Error al decodificar el token:", error);
+                setUsuario_id("Token inválido");
+            }
+        } else {
+            setUsuario_id("Token no encontrado");
+        }
+    }, []);
+
+    useEffect(() => {
+        const fetchCuentas = async () => {
+            if (usuario_id) {
+                try {
+                    const rsp = await getCuentasByUsuarioId(usuario_id);
+                    if (rsp) {
+                        setCuentas(rsp);
+                    } else {
+                        console.log("No hay cuentas disponibles");
+                    }
+                } catch (error) {
+                    console.error("Error en fetchCuentas:", error);
+                }
+            }
+        };
+        fetchCuentas();
+    }, [usuario_id]);
 
     const Registrar = async () => {
         let rsp = await registrarTransaccion(transaccion);
@@ -48,14 +86,22 @@ const NuevaTransac = ({ isOpen, onClose }) => {
                         <option value="AJUSTE">AJUSTE</option>
                     </select>
                 </div>
-                <InputForm
-                    label="ID de Cuenta"
-                    type="number"
-                    name="cuenta_id"
-                    value={transaccion.cuenta_id}
-                    onChange={(e) => setTransaccion({ ...transaccion, cuenta_id: e.target.value })}
-                    placeHolder="Ingrese el ID de la cuenta"
-                />
+                <div className="form-group">
+                    <label className="block mb-2 text-sm font-medium">Cuenta</label>
+                    <select
+                        name="cuenta_id"
+                        value={transaccion.cuenta_id}
+                        onChange={(e) => setTransaccion({ ...transaccion, cuenta_id: e.target.value })}
+                        className="bg-white rounded-lg py-2 px-2 border border-gray-300"
+                    >
+                        <option value="">Seleccione una cuenta</option>
+                        {cuentas.map((cuenta) => (
+                            <option key={cuenta.cuenta_id} value={cuenta.cuenta_id}>
+                                {cuenta.alias}
+                            </option>
+                        ))}
+                    </select>
+                </div>
                 <div className="form-group">
                     <label className="block mb-2 text-sm font-medium">Moneda</label>
                     <select
@@ -64,8 +110,8 @@ const NuevaTransac = ({ isOpen, onClose }) => {
                         onChange={(e) => setTransaccion({ ...transaccion, moneda_id: e.target.value })}
                         className="bg-white rounded-lg py-2 px-2 border border-gray-300"
                     >
-                        <option value="$ARG">$ARG</option>
-                        <option value="$USD">$USD</option>
+                        <option value="ARG">ARG</option>
+                        <option value="USD">USD</option>
                     </select>
                 </div>
                 <InputForm
@@ -79,7 +125,7 @@ const NuevaTransac = ({ isOpen, onClose }) => {
                     <button onClick={Registrar} className="mt-4 bg-blue-500 text-white py-2 px-4 rounded">
                         Registrar Transacción
                     </button>
-                    <button className="bg-red-600 text-white mt-4 py-2 px-4 rounded">
+                    <button onClick={onClose} className="bg-red-600 text-white mt-4 py-2 px-4 rounded">
                         Cancelar
                     </button>
                 </div>

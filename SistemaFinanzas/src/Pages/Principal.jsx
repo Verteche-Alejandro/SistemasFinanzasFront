@@ -1,17 +1,26 @@
 import React, { useEffect, useState } from "react";
 import Esquema from "../Layouts/Esquema";
+import { jwtDecode } from "jwt-decode";
 
 const Principal = () => {
-    const [info, setInfo] = useState(null);
+    const [info, setInfo] = useState("");
 
     useEffect(() => {
-        const storedTransacciones = sessionStorage.getItem("transacciones");
-        if (storedTransacciones) {
-            const transacciones = JSON.parse(storedTransacciones);
-            let usuario = transacciones.length > 0 ? transacciones[0].cuenta.usuario : null;
-            setInfo(usuario);
+        const token = localStorage.getItem("token");
+        if (token) {
+            try {
+                const decoded = jwtDecode(token);
+                console.log("Decoded:", decoded);
+                setInfo(decoded || "ID no encontrado");
+            } catch (error) {
+                console.error("Error al decodificar el token:", error);
+                setInfo("Token inválido");
+            }
+        } else {
+            setInfo("Token no encontrado");
         }
     }, []);
+
 
     const capitalizarPrimeraLetra = (str) => {
         if (str.length === 0) return str;
@@ -22,7 +31,7 @@ const Principal = () => {
         <>
             <Esquema>
                 <h1 className="text-4xl font-bold text-gray-800">
-                    Bienvenido: {info ? capitalizarPrimeraLetra(info.usuario) : "Cargando..."}
+                    Bienvenido: {capitalizarPrimeraLetra(info.sub)}
                 </h1>
                 <p className="text-gray-500">Selecciona una opción del menú</p>
                 <div className="flex flex-wrap justify-center items-center gap-4 mt-4">

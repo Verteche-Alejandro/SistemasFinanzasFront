@@ -1,7 +1,7 @@
-import { useState } from "react"
-import Esquema from "../Layouts/Esquema"
-import TableTransac from "../Layouts/TableTransac"
+import React, { useEffect, useState } from "react";
+import Esquema from "../Layouts/Esquema";
 import NuevaTransac from "../Layouts/NuevaTransac";
+import TableTransac from "../Layouts/TableTransac";
 
 const Transacciones = () => {
     const [openModal, setOpenModal] = useState(false);
@@ -28,11 +28,9 @@ const Transacciones = () => {
                 </div>
             </Esquema>
 
-            <div>
-                <NuevaTransac isOpen={openModal} onClose={()=>setOpenModal(false)} />
-            </div>
+            <NuevaTransac isOpen={openModal} onClose={() => setOpenModal(false)} />
         </>
-    )
-}
+    );
+};
 
-export default Transacciones
+export default Transacciones;

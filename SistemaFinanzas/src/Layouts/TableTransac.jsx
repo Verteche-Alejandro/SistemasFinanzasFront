@@ -4,7 +4,6 @@ import { getTransaccionesByCuenta } from "../Services/Controllers/Transaccion";
 
 const TableTransac = () => {
     const [transacciones, setTransacciones] = useState([]);
-    const [cuenta_id, setCuenta_Id] = useState(1);
 
     const headers = [
         "Fecha",
@@ -19,10 +18,9 @@ const TableTransac = () => {
     useEffect(() => {
         const fetchTransacciones = async () => {
             try {
-                const rsp = await getTransaccionesByCuenta(cuenta_id);
+                const rsp = await getTransaccionesByCuenta(1);
                 if (rsp && rsp.length > 0) {
                     setTransacciones(rsp);
-                    sessionStorage.setItem("transacciones", JSON.stringify(rsp));
                 } else {
                     console.log("No hay transacciones disponibles");
                 }
@@ -32,7 +30,7 @@ const TableTransac = () => {
         };
 
         fetchTransacciones();
-    }, [cuenta_id]);
+    }, []);
 
     return (
         <Table headers={headers}>
@@ -43,7 +41,7 @@ const TableTransac = () => {
                         <td>${transaccion.monto}</td> {/* Monto */}
                         <td>{transaccion.tipo_transaccion}</td> {/* Tipo de transacción */}
                         <td>{transaccion.cuenta.alias}</td> {/* Alias de la cuenta */}
-                        <td>{transaccion.cuenta.moneda.nombre} ({transaccion.cuenta.moneda.simbolo})</td> {/* Moneda */}
+                        <td>({transaccion.cuenta.moneda.simbolo}) {transaccion.cuenta.moneda.nombre}</td> {/* Moneda */}
                         <td className="p-2 flex flex-wrap justify-center space-x-2">
                             <button className="rounded-lg bg-red-600 p-2 text-white">Eliminar</button>
                             <button className="rounded-lg bg-yellow-500 p-2 text-white">Modificar</button>

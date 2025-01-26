@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom"
 import { login } from "../Services/Auth"
 
 const Login = () => {
-    const [user, setUser] = useState("");
     const [data, setData] = useState({ usuario: "", clave: "" });
     const [errores, setErrores] = useState("");
     const navigate = useNavigate();
