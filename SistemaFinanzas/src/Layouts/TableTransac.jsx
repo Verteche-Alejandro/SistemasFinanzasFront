@@ -1,13 +1,9 @@
 import { useState, useEffect } from "react";
 import Table from "../Components/Tables/Table";
 import { getTransaccionesByCuenta } from "../Services/Controllers/Transaccion";
-import { getCuentasByUsuarioId } from "../Services/Controllers/Cuenta";
-import { jwtDecode } from "jwt-decode";
 
-const TableTransac = () => {
+const TableTransac = ({ cuentas }) => {
     const [transacciones, setTransacciones] = useState([]);
-    const [usuario_id, setUsuario_id] = useState(null);
-    const [cuentas, setCuentas] = useState([]);
     const headers = [
         "Fecha",
         "Monto",
@@ -16,41 +12,6 @@ const TableTransac = () => {
         "Moneda",
         "Acciones",
     ];
-
-    useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (token) {
-            try {
-                const decoded = jwtDecode(token);
-                console.log("Decoded:", decoded);
-                setUsuario_id(decoded.usuario_id || null);
-            } catch (error) {
-                console.error("Error al decodificar el token:", error);
-            }
-        } else {
-            console.warn("Token no encontrado");
-        }
-    }, []);
-
-    // Obtener las cuentas asociadas al usuario
-    useEffect(() => {
-        const fetchCuentas = async () => {
-            if (usuario_id) {
-                try {
-                    const rsp = await getCuentasByUsuarioId(usuario_id);
-                    if (rsp && rsp.length > 0) {
-                        setCuentas(rsp);
-                        sessionStorage.setItem("cuentas", JSON.stringify(rsp));
-                    } else {
-                        console.log("No hay cuentas disponibles");
-                    }
-                } catch (error) {
-                    console.error("Error en fetchCuentas:", error);
-                }
-            }
-        };
-        fetchCuentas();
-    }, [usuario_id]);
 
     // Obtener las transacciones para todas las cuentas
     useEffect(() => {
@@ -62,7 +23,7 @@ const TableTransac = () => {
                     );
 
                     const transaccionesArray = await Promise.all(transaccionesEncontradas);
-                    const transacciones = transaccionesArray.flat(); // Combina los resultados de todas las transacciones por cuenta en un solo array
+                    const transacciones = transaccionesArray.flat(); // Combina los resultados de todas las transacciones
                     setTransacciones(transacciones);
                 } else {
                     console.log("No hay cuentas para obtener transacciones");
@@ -71,8 +32,9 @@ const TableTransac = () => {
                 console.error("Error en fetchTransacciones:", error);
             }
         };
+
         fetchTransacciones();
-    }, [cuentas]);
+    }, [cuentas]); // Se ejecuta cuando cambian las cuentas
 
     return (
         <Table headers={headers}>
