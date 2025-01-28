@@ -43,21 +43,17 @@ export async function GET(url) {
         .catch((err) => console.log("Error en la solicitud GET desde fetch", err));
 }
 
-export async function GETBYID(url, data) {
-    let objString = '?';
-    if (Array.isArray(data)) {
-        data.forEach((el, index) => {
-            objString = objString + `array[${index}][id]=${el.id}&`;
-        });
-    } else {
-        objString = objString + new URLSearchParams(data).toString();
-    }
+export async function GETBYID(url) {
+    const token = localStorage.getItem('token');
+    const finalUrl = `${backendurl}${url}`;
 
-    return await fetch(backendurl + url + objString, {
+    console.log("URL final:", finalUrl);
+
+    return await fetch(finalUrl, {
         method: 'GET',
         mode: 'cors',
         headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
         }
     })

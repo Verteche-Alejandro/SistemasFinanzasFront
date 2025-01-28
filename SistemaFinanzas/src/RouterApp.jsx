@@ -4,6 +4,8 @@ import RoutesPages from "./Layouts/RoutesPages";
 // Pages
 import Login from "./Pages/Login";
 import Principal from "./Pages/Principal";
+import Transacciones from "./Pages/Transacciones";
+import Cuentas from "./Pages/Cuentas";
 
 // Componente para rutas protegidas
 const ProtectedRoute = ({ children }) => {
@@ -32,6 +34,29 @@ const RouterApp = () => {
             <ProtectedRoute>
               <RoutesPages>
                 <Principal />
+              </RoutesPages>
+            </ProtectedRoute>
+          }
+        />
+        {/* Ruta protegida */}
+        <Route
+          path="/transacciones"
+          element={
+            <ProtectedRoute>
+              <RoutesPages>
+                <Transacciones />
+              </RoutesPages>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Ruta protegida */}
+        <Route
+          path="/cuentas"
+          element={
+            <ProtectedRoute>
+              <RoutesPages>
+                <Cuentas />
               </RoutesPages>
             </ProtectedRoute>
           }
