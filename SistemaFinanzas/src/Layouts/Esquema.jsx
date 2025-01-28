@@ -5,9 +5,9 @@ const Esquema = ({ children }) => {
     const [links, setLinks] = useState([
         { text: "Inicio", path: "/principal" },
         { text: "Perfil", path: "/perfil" },
-        { text: "Cuentas", path: "/cuentas" },
-        { text: "Transacciones", path: "/transacciones" },
-        { text: "Reportes", path: "/reportes" },
+        { text: "Mis Cuentas", path: "/cuentas" },
+        { text: "Gestionar Transacciones", path: "/transacciones" },
+        { text: "Generar Reportes", path: "/reportes" },
     ]);
 
     const [sidebarOpen, setSidebarOpen] = useState(false);

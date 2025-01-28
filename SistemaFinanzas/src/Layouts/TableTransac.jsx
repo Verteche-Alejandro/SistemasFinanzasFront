@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Table from "../Components/Tables/Table";
-import { getTransaccionesByCuenta } from "../Services/Controllers/Transaccion";
+import { getTransaccionesByCuenta, eliminarTransaccion } from "../Services/Controllers/Transaccion";
 
 const TableTransac = ({ cuentas }) => {
     const [transacciones, setTransacciones] = useState([]);
@@ -36,6 +36,20 @@ const TableTransac = ({ cuentas }) => {
         fetchTransacciones();
     }, [cuentas]); // Se ejecuta cuando cambian las cuentas
 
+    // Manejar la eliminación de una transacción
+    const eliminar = async (transac_id) => {
+        if (transac_id) {
+            try {
+                await eliminarTransaccion(transac_id);
+                // Filtrar las transacciones para eliminar la transacción borrada
+                const nuevasTransacciones = transacciones.filter(transaccion => transaccion.transac_id !== transac_id);
+                setTransacciones(nuevasTransacciones);
+            } catch (error) {
+                console.error("Error al eliminar la transacción:", error);
+            }
+        }
+    };
+
     return (
         <Table headers={headers}>
             {transacciones.length > 0 ? (
@@ -45,12 +59,11 @@ const TableTransac = ({ cuentas }) => {
                         <td>${transaccion.monto}</td>
                         <td>{transaccion.tipo_transaccion}</td>
                         <td>{transaccion.cuenta.alias}</td>
-                        <td>
-                            ({transaccion.cuenta.moneda.simbolo}){" "}
-                            {transaccion.cuenta.moneda.nombre}
-                        </td>
+                        <td>({transaccion.cuenta.moneda.simbolo}) {transaccion.cuenta.moneda.nombre}</td>
                         <td className="p-2 flex flex-wrap justify-center space-x-2">
-                            <button className="rounded-lg bg-red-600 p-2 text-white">
+                            <button
+                                className="rounded-lg bg-red-600 p-2 text-white"
+                                onClick={() => eliminar(transaccion.transac_id)}>
                                 Eliminar
                             </button>
                             <button className="rounded-lg bg-yellow-500 p-2 text-white">
