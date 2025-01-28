@@ -50,13 +50,18 @@ const TableTransac = ({ cuentas }) => {
         }
     };
 
+    function formatearNumero(num) {
+        return num.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+
     return (
         <Table headers={headers}>
             {transacciones.length > 0 ? (
                 transacciones.map((transaccion, index) => (
                     <tr key={index}>
                         <td>{new Date(transaccion.fecha).toLocaleDateString()}</td>
-                        <td>${transaccion.monto}</td>
+                        <td>${formatearNumero(transaccion.monto)}</td>
                         <td>{transaccion.tipo_transaccion}</td>
                         <td>{transaccion.cuenta.alias}</td>
                         <td>({transaccion.cuenta.moneda.simbolo}) {transaccion.cuenta.moneda.nombre}</td>

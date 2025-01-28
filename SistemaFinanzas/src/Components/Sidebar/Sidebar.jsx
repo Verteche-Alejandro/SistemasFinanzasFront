@@ -6,6 +6,7 @@ function Sidebar({ logo, links, isOpen, toggleSidebar }) {
 
     const cerrarSesion = () => {
         localStorage.removeItem("token");
+        sessionStorage.removeItem("cuentasUsuario");
         navigate("/login");
     };
 

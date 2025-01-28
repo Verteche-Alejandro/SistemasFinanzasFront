@@ -69,7 +69,6 @@ const NuevaTransac = ({ isOpen, onClose, cuentas, onActualizarCuentas }) => {
                         <option value="RETIRO">RETIRO</option>
                         <option value="TRANSFERENCIA">TRANSFERENCIA</option>
                         <option value="PAGO">PAGO</option>
-                        <option value="AJUSTE">AJUSTE</option>
                     </select>
                 </div>
                 <div className="form-group">
