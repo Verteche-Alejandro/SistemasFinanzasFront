@@ -1,4 +1,4 @@
-const InputForm = ({ label, type, name, value, onChange, placeHolder, icono}) => {
+const InputForm = ({ label, type, name, value, onChange, placeHolder, icono, readOnly }) => {
     return (
         <div className="form-group">
             {label && <label className="block mb-2 text-sm font-medium">{label}</label>}
@@ -11,6 +11,7 @@ const InputForm = ({ label, type, name, value, onChange, placeHolder, icono}) =>
                     value={value}
                     placeholder={placeHolder}
                     onChange={onChange}
+                    readOnly={readOnly}
                 />
             </div>
         </div>
