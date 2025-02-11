@@ -7,6 +7,7 @@ import Principal from "./Pages/Principal";
 import Transacciones from "./Pages/Transacciones";
 import Cuentas from "./Pages/Cuentas";
 import Reportes from "./Pages/Reportes";
+import Perfil from "./Pages/Perfil";
 
 // Componente para rutas protegidas
 const ProtectedRoute = ({ children }) => {
@@ -71,6 +72,18 @@ const RouterApp = () => {
             <ProtectedRoute>
               <RoutesPages>
                 <Reportes />
+              </RoutesPages>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Ruta protegida */}
+        <Route
+          path="/perfil"
+          element={
+            <ProtectedRoute>
+              <RoutesPages>
+                <Perfil />
               </RoutesPages>
             </ProtectedRoute>
           }
