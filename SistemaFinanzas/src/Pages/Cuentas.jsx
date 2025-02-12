@@ -3,6 +3,7 @@ import Esquema from "../Layouts/Esquema";
 import { getCuentasByUsuarioId } from "../Services/Controllers/Cuenta";
 import CustomAlert from "../Components/CustomAlert";
 import ModalAlerta from "../Layouts/ModalAlerta";
+import CrearCuenta from "../Layouts/CrearCuenta"; // Asegúrate de tener el componente CrearCuenta importado
 
 const Cuentas = () => {
     const [cuentas, setCuentas] = useState([]);
@@ -13,6 +14,7 @@ const Cuentas = () => {
     const [showNotification, setShowNotification] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [tempMontoAlarma, setTempMontoAlarma] = useState('');
+    const [showCreateModal, setShowCreateModal] = useState(false); // Nuevo estado para el modal de CrearCuenta
 
     useEffect(() => {
         const cargarCuentas = async () => {
@@ -114,7 +116,7 @@ const Cuentas = () => {
                     </h1>
                 </div>
 
-                {/* Botón para mostrar modal */}
+                {/* Botón para mostrar el modal de establecer alerta de saldo */}
                 <div className="mb-6 max-w-md mx-auto w-full">
                     <button
                         onClick={() => {
@@ -135,13 +137,27 @@ const Cuentas = () => {
                     </button>
                 </div>
 
-                <ModalAlerta
-                    isOpen={showModal}
-                    onClose={() => setShowModal(false)}
-                    onGuardar={handleGuardarAlarma}
-                    montoAlarma={tempMontoAlarma}
-                    onChange={handleTempMontoAlarmaChange}
-                />
+                {/* Botón para abrir el modal de crear cuenta */}
+                <div className="mb-6 max-w-md mx-auto w-full">
+                    <button
+                        onClick={() => setShowCreateModal(true)} // Abre el modal de Crear Cuenta
+                        className="w-full bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-all duration-300 flex items-center justify-center gap-2"
+                    >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M12 4v16m8-8H4"
+                            />
+                        </svg>
+                        Crear Nueva Cuenta
+                    </button>
+                </div>
+
+                <CrearCuenta isOpen={showCreateModal} onClose={() => setShowCreateModal(false)} /> {/* Modal de CrearCuenta */}
+
+                <ModalAlerta isOpen={showModal} onClose={() => setShowModal(false)} onGuardar={handleGuardarAlarma} montoAlarma={tempMontoAlarma} onChange={handleTempMontoAlarmaChange} />
 
                 {/* Alertas */}
                 {showNotification && (
@@ -195,9 +211,9 @@ const Cuentas = () => {
                         </div>
                     ))}
                 </div>
-
             </div>
         </Esquema>
     )
 }
-export default Cuentas
+
+export default Cuentas;
