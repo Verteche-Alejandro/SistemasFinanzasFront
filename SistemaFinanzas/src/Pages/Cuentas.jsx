@@ -171,41 +171,45 @@ const Cuentas = () => {
                 {/* Grid de cuentas */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                     {cuentas.map((cuenta) => (
-                        <div
-                            key={cuenta.cuenta_id}
-                            className={`bg-white shadow-lg rounded-lg p-6 flex flex-col justify-between h-full transform transition-all duration-300 hover:scale-105 ${montoAlarma && cuenta.saldo < Number(montoAlarma)
-                                ? 'border-2 border-red-500'
-                                : ''
-                                }`}
-                        >
-                            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-                                {cuenta.alias}
-                            </h2>
-                            <div className="flex-grow items-center justify-center">
-                                <p className="text-gray-600 mb-2">
-                                    Tipo de Cuenta: {cuenta.tipoDeCuenta}
-                                </p>
-                                <p className="text-gray-600 mb-2">
-                                    Moneda: {cuenta.moneda?.nombre}
-                                </p>
-                                <p className={`mt-4 text-3xl font-bold text-center ${montoAlarma && cuenta.saldo < Number(montoAlarma)
-                                    ? 'text-red-600'
-                                    : 'text-green-600'
-                                    }`}>
-                                    ${cuenta.saldo.toLocaleString("es-ES")}
+                        <div key={cuenta.cuenta_id} className={`card ${montoAlarma && cuenta.saldo < Number(montoAlarma) ? 'border-2 border-red-500' : ''}`}>
+                            <div className="mb-5">
+                                <h1 className="card-title">
+                                    Nombre de Cuenta
+                                </h1>
+                                <p>
+                                    {cuenta.alias}
                                 </p>
                             </div>
-                            <div className="flex flex-wrap items-center justify-center gap-4 mt-4">
-                                <button className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-all duration-300 w-full sm:w-auto">
+                            <div className="flex flex-col items-center justify-start gap-4">
+                                <div>
+                                    <h3 className="font-bold">Tipo de Cuenta</h3>
+                                    <p>{cuenta.tipoDeCuenta}</p>
+                                </div>
+                                <div>
+                                    <h3 className="font-bold">Moneda</h3>
+                                    <p>
+                                        {cuenta.moneda?.nombre}
+                                    </p>
+                                </div>
+                                <div className={`m-10 text-3xl text-center ${montoAlarma && cuenta.saldo < Number(montoAlarma) ? 'text-red-400' : 'text-green-300'}`}>
+                                    <h3 className="font-bold">Saldo:</h3>
+                                    <p>
+                                        ${cuenta.saldo.toLocaleString("es-ES")}
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="buttons flex flex-wrap items-center justify-center gap-4 mt-4">
+                                <button className="button-editar">
                                     Editar
                                 </button>
-                                <button className="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition-all duration-300 w-full sm:w-auto">
+                                <button className="button-editar">
                                     Eliminar
                                 </button>
                             </div>
                         </div>
                     ))}
                 </div>
+
             </div>
         </Esquema>
     )

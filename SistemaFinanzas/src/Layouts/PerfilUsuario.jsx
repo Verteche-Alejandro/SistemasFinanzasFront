@@ -137,10 +137,12 @@ const PerfilUsuario = ({ info }) => {
 
                 <div className="flex gap-4 mt-4">
                     <ButtonForm
+                        className="animated-button"
                         text="Editar Perfil"
                         onClick={() => handleModalToggle('editando', true)}
                     />
                     <ButtonForm
+                    className="animated-button"
                         text="Cambiar Contraseña"
                         onClick={() => handleModalToggle('cambiandoContraseña', true)}
                     />
