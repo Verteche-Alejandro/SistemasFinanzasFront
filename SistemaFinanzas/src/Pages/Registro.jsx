@@ -100,22 +100,22 @@ const RegistroUsuario = () => {
             const rsp = await Registro(datosRegistro);
             console.log("Respuesta del servidor:", rsp);
 
-            if (rsp.ok) {
+            if (rsp?.message) {
                 alert("Usuario registrado correctamente");
                 navigate("/login");
             } else {
                 setErrores(prev => ({
                     ...prev,
-                    general: "Ocurrió un error al registrar el usuario"
+                    general: rsp?.error || "No se pudo registrar el usuario"
                 }));
             }
         } catch (error) {
             console.error("Error en el registro:", error);
             // Manejar diferentes tipos de errores
-            if (error.response?.data) {
+            if (error.rsp?.data) {
                 setErrores(prev => ({
                     ...prev,
-                    general: error.response.data
+                    general: error.rsp.data
                 }));
             } else {
                 setErrores(prev => ({

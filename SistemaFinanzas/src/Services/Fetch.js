@@ -15,19 +15,37 @@ export async function POST(url, data) {
             body: JSON.stringify(data)
         });
 
-        // Verifica si la respuesta es válida y tiene contenido
+        console.log("Código de estado HTTP:", response.status);
+
+        // Si la respuesta no es exitosa, retorna un error con el mensaje del servidor
         if (!response.ok) {
-            console.log("Error en la solicitud POST desde fetch", response.statusText);
-            return { status: response.status, message: response.statusText };
+            let errorMsg = "Error en la solicitud";
+            try {
+                const errorData = await response.json();
+                errorMsg = errorData.message || response.statusText;
+            } catch (e) {
+                errorMsg = response.statusText; // Si la respuesta no es JSON, usa el texto de estado
+            }
+            console.log("Error en la solicitud POST:", errorMsg);
+            return { error: errorMsg };
         }
 
+        // Si la respuesta es un 204 (No Content), retorna un mensaje manualmente
+        if (response.status === 204) {
+            console.log("El servidor devolvió 204 No Content.");
+            return { message: "Operación exitosa" };
+        }
+
+        // Intentar convertir la respuesta en JSON
         const jsonResponse = await response.json();
+        console.log("Respuesta JSON del servidor:", jsonResponse);
         return jsonResponse;
     } catch (error) {
-        console.log("Error en la solicitud POST en catch", error);
-        throw error;
+        console.log("Error en la solicitud POST en catch:", error);
+        return { error: "Error de conexión con el servidor" };
     }
-};
+}
+
 
 
 export async function GET(url) {
