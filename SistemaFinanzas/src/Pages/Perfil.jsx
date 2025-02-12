@@ -9,7 +9,8 @@ const Perfil = () => {
     useEffect(() => {
         const ObtenerDatosUsuario = async () => {
             try {
-                let rsp = await getUsuarioById(1);
+                const id = localStorage.getItem("usuario_id");
+                let rsp = await getUsuarioById(id);
                 if (rsp) {
                     setUsuario(rsp);
                 }

@@ -11,7 +11,10 @@ const Principal = () => {
             try {
                 const decoded = jwtDecode(token);
                 console.log("Decoded:", decoded);
-                setInfo(decoded || "ID no encontrado");
+                if (decoded) {
+                    setInfo(decoded);
+                    localStorage.setItem("usuario_id", decoded.usuario_id);
+                }
             } catch (error) {
                 console.error("Error al decodificar el token:", error);
                 setInfo("Token inválido");
