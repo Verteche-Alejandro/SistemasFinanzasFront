@@ -8,6 +8,7 @@ import Transacciones from "./Pages/Transacciones";
 import Cuentas from "./Pages/Cuentas";
 import Reportes from "./Pages/Reportes";
 import Perfil from "./Pages/Perfil";
+import RegistroUsuario from "./Pages/Registro";
 
 // Componente para rutas protegidas
 const ProtectedRoute = ({ children }) => {
@@ -25,6 +26,16 @@ const RouterApp = () => {
           element={
             <RoutesPages>
               <Login />
+            </RoutesPages>
+          }
+        />
+
+        {/* Ruta pública */}
+        <Route
+          path="/registro"
+          element={
+            <RoutesPages>
+              <RegistroUsuario />
             </RoutesPages>
           }
         />

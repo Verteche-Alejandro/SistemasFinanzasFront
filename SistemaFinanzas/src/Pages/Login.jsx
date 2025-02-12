@@ -72,7 +72,7 @@ const Login = () => {
                 <hr className="border-gray-300 my-2" />
                 <p className="text-sm text-white">
                     No tienes una cuenta?{" "}
-                    <a href="/register" className="font-bold hover:underline">
+                    <a href="/registro" className="font-bold hover:underline">
                         Registrate aqui
                     </a>
                 </p>
