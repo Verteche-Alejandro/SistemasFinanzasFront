@@ -2,13 +2,7 @@ import React from 'react';
 import Modal from '../Components/Modals/Modal';
 import InputForm from '../Components/Inputs/InputForm';
 
-const ModalAlerta = ({
-    isOpen,
-    onClose,
-    onGuardar,
-    montoAlarma,
-    onChange
-}) => {
+const ModalAlerta = ({ isOpen, onClose, onGuardar, montoAlarma, onChange }) => {
     return (
         <Modal
             isOpen={isOpen}

@@ -101,7 +101,7 @@ const RegistroUsuario = () => {
             console.log("Respuesta del servidor:", rsp);
 
             if (rsp?.message) {
-                alert("Usuario registrado correctamente");
+                alert("Usuario registrado correctamente,sera redirigido al login");
                 navigate("/login");
             } else {
                 setErrores(prev => ({

@@ -75,7 +75,7 @@ const PerfilUsuario = ({ info }) => {
                 email: nuevoCorreo.trim(),
             };
 
-            const respuesta = await updateUsuario(info?.usuario_id || 1, data);
+            const respuesta = await updateUsuario(info?.usuario_id, data);
 
             if (respuesta) {
                 setUsuario(prev => ({ ...prev, ...data }));
@@ -102,7 +102,7 @@ const PerfilUsuario = ({ info }) => {
         }
 
         try {
-            const respuesta = await updateClave(info?.usuario_id || 1, {
+            const respuesta = await updateClave(info?.usuario_id, {
                 clave: nuevaContraseña
             });
 
@@ -142,7 +142,7 @@ const PerfilUsuario = ({ info }) => {
                         onClick={() => handleModalToggle('editando', true)}
                     />
                     <ButtonForm
-                    className="animated-button"
+                        className="animated-button"
                         text="Cambiar Contraseña"
                         onClick={() => handleModalToggle('cambiandoContraseña', true)}
                     />

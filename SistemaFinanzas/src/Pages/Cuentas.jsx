@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { jwtDecode } from "jwt-decode";
 import Esquema from "../Layouts/Esquema";
 import { getCuentasByUsuarioId } from "../Services/Controllers/Cuenta";
 import CustomAlert from "../Components/CustomAlert";
@@ -18,40 +17,30 @@ const Cuentas = () => {
     useEffect(() => {
         const cargarCuentas = async () => {
             try {
-                const token = localStorage.getItem("token");
-                if (!token) {
-                    setError("No hay token de autenticación");
+                const id = localStorage.getItem("usuario_id");
+                if (!id) {
+                    setError("No se encontro el id del usuario");
                     setLoading(false);
                     return;
                 }
 
-                const decoded = jwtDecode(token);
-                const usuarioId = decoded.usuario_id;
-
                 let cuentasSession = sessionStorage.getItem("cuentasUsuario");
                 let cuentasParseadas = cuentasSession ? JSON.parse(cuentasSession) : null;
 
-                if (
-                    !cuentasParseadas ||
-                    !cuentasParseadas.length ||
-                    cuentasParseadas[0]?.usuario_id !== usuarioId
-                ) {
-                    const response = await getCuentasByUsuarioId(usuarioId);
+                if (!cuentasParseadas || !cuentasParseadas.length || cuentasParseadas[0]?.usuario_id !== id) {
+                    const response = await getCuentasByUsuarioId(id);
 
                     if (!response) {
                         throw new Error("No se pudieron obtener las cuentas");
                     }
 
-                    sessionStorage.setItem(
-                        "cuentasUsuario",
-                        JSON.stringify(response)
-                    );
+                    sessionStorage.setItem("cuentasUsuario", JSON.stringify(response));
                     setCuentas(response);
                 } else {
                     setCuentas(cuentasParseadas);
                 }
 
-                const montoAlarmaSession = sessionStorage.getItem(`montoAlarma_${usuarioId}`);
+                const montoAlarmaSession = sessionStorage.getItem(`montoAlarma_${id}`);
                 if (montoAlarmaSession) {
                     setMontoAlarma(montoAlarmaSession);
                 }
@@ -89,11 +78,8 @@ const Cuentas = () => {
 
     const handleGuardarAlarma = () => {
         if (tempMontoAlarma) {
-            const token = localStorage.getItem("token");
-            const decoded = jwtDecode(token);
-            const usuarioId = decoded.usuario_id;
-
-            sessionStorage.setItem(`montoAlarma_${usuarioId}`, tempMontoAlarma);
+            const id = localStorage.getItem("usuario_id");
+            sessionStorage.setItem(`montoAlarma_${id}`, tempMontoAlarma);
             setMontoAlarma(tempMontoAlarma);
             setShowModal(false);
         }

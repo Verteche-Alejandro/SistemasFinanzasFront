@@ -13,17 +13,12 @@ const Transacciones = () => {
     // Obtener las cuentas al cargar el componente y cuando se actualicen los datos
     useEffect(() => {
         const obtenerCuentasUsuario = async () => {
-            const token = localStorage.getItem("token");
-            if (!token) return;
+            const id = localStorage.getItem("usuario_id");
+            if (!id) return;
 
             try {
-                //Obtener el usuario_id
-                const decoded = jwtDecode(token);
-                const usuario_id = decoded.usuario_id;
-                console.log("Id de usuario:", usuario_id);
-
                 // Obtener cuentas del usuario
-                const rsp = await getCuentasByUsuarioId(usuario_id);
+                const rsp = await getCuentasByUsuarioId(id);
 
                 if (rsp && rsp.length > 0) {
                     // Guardar en sessionStorage y estado
