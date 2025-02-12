@@ -45,6 +45,17 @@ const NuevaTransac = ({ isOpen, onClose, cuentas, onActualizarCuentas }) => {
         }
     };
 
+    const handleCuentaChange = (e) => {
+        const cuentaId = e.target.value;
+        const cuentaSeleccionada = cuentas.find(c => c.cuenta_id === Number(cuentaId));
+
+        setTransaccion({
+            ...transaccion,
+            cuenta: { cuenta_id: cuentaId },
+            moneda: { moneda_id: cuentaSeleccionada ? cuentaSeleccionada.moneda.moneda_id : "" }
+        });
+    };
+
     return (
         <Modal isOpen={isOpen} onClose={onClose} title="Nueva Transacción">
             <form onSubmit={Registrar} className="space-y-4">
@@ -64,12 +75,11 @@ const NuevaTransac = ({ isOpen, onClose, cuentas, onActualizarCuentas }) => {
                         onChange={(e) => setTransaccion({ ...transaccion, tipo_transaccion: e.target.value })}
                         className="bg-white rounded-lg py-2 px-2 border border-gray-300"
                     >
-                        <option value="">Seleccione tipo</option>
+                        <option value="" selected disabled>Seleccione tipo</option>
                         <option value="DEPOSITO">DEPOSITO</option>
                         <option value="RETIRO">RETIRO</option>
                         <option value="TRANSFERENCIA">TRANSFERENCIA</option>
                         <option value="PAGO">PAGO</option>
-                        <option value="AJUSTE">AJUSTE</option>
                     </select>
                 </div>
                 <div className="form-group">
@@ -77,27 +87,27 @@ const NuevaTransac = ({ isOpen, onClose, cuentas, onActualizarCuentas }) => {
                     <select
                         name="cuenta_id"
                         value={transaccion.cuenta.cuenta_id}
-                        onChange={(e) => setTransaccion({ ...transaccion, cuenta: { cuenta_id: e.target.value } })}
+                        onChange={handleCuentaChange}
                         className="bg-white rounded-lg py-2 px-2 border border-gray-300">
                         <option value="">Seleccione una cuenta</option>
                         {cuentas.map((cuenta) => (
                             <option key={cuenta.cuenta_id} value={cuenta.cuenta_id}>
-                                {cuenta.alias}
+                                {cuenta.alias} - {cuenta.moneda.nombre}
                             </option>
                         ))}
                     </select>
                 </div>
+                {/* Mostrar la moneda de la cuenta seleccionada */}
                 <div className="form-group">
-                    <label className="block mb-2 text-sm font-medium">Moneda</label>
-                    <select
-                        name="moneda_id"
-                        value={transaccion.moneda.moneda_id}
-                        onChange={(e) => setTransaccion({ ...transaccion, moneda: { moneda_id: e.target.value } })}
-                        className="bg-white rounded-lg py-2 px-2 border border-gray-300">
-                        <option value="">Seleccione moneda</option>
-                        <option value="1">ARG</option>
-                        <option value="2">USD</option>
-                    </select>
+                    <label className="block mb-2 text-sm font-medium">Moneda de la cuenta</label>
+                    <InputForm
+                        type="text"
+                        readOnly={true}
+                        value={transaccion.cuenta.cuenta_id ?
+                            cuentas.find(c => c.cuenta_id === Number(transaccion.cuenta.cuenta_id))?.moneda.nombre
+                            : ""}
+                        className="bg-gray-100 rounded-lg py-2 px-2 border border-gray-300"
+                    />
                 </div>
                 <InputForm
                     label="Fecha"
