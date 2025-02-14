@@ -21,7 +21,7 @@ const Cuentas = () => {
             try {
                 const id = localStorage.getItem("usuario_id");
                 if (!id) {
-                    setError("No se encontro el id del usuario");
+                    setError("No se encontró el id del usuario");
                     setLoading(false);
                     return;
                 }
@@ -31,15 +31,22 @@ const Cuentas = () => {
 
                 if (!cuentasParseadas || !cuentasParseadas.length || cuentasParseadas[0]?.usuario_id !== id) {
                     const response = await getCuentasByUsuarioId(id);
-
+                    // Aquí está faltando guardar las cuentas
                     if (!response) {
                         throw new Error("No se pudieron obtener las cuentas");
                     }
 
-                    sessionStorage.setItem("cuentasUsuario", JSON.stringify(response));
-                    setCuentas(response);
-                } else {
-                    setCuentas(cuentasParseadas);
+                    // Convertir saldos a números
+                    const cuentasConSaldoNumerico = response.map(cuenta => ({
+                        ...cuenta,
+                        saldo: typeof cuenta.saldo === 'string' ? parseFloat(cuenta.saldo) : cuenta.saldo
+                    }));
+
+                    // Guardar en sessionStorage
+                    sessionStorage.setItem("cuentasUsuario", JSON.stringify(cuentasConSaldoNumerico));
+
+                    // Actualizar el estado
+                    setCuentas(cuentasConSaldoNumerico);
                 }
 
                 const montoAlarmaSession = sessionStorage.getItem(`montoAlarma_${id}`);
@@ -87,6 +94,21 @@ const Cuentas = () => {
         }
     };
 
+    const handleGuardarCuenta = (nuevaCuenta) => {
+        // Asegurarnos de que el saldo sea número
+        const cuentaConSaldoNumerico = {
+            ...nuevaCuenta,
+            saldo: typeof nuevaCuenta.saldo === 'string' ? parseFloat(nuevaCuenta.saldo) : nuevaCuenta.saldo
+        };
+
+        setCuentas(prevCuentas => {
+            const cuentasActualizadas = [...prevCuentas, cuentaConSaldoNumerico];
+            // Guardar en sessionStorage dentro del callback de setCuentas
+            sessionStorage.setItem("cuentasUsuario", JSON.stringify(cuentasActualizadas));
+            return cuentasActualizadas;
+        });
+    };
+
     if (loading) {
         return (
             <Esquema>
@@ -105,6 +127,12 @@ const Cuentas = () => {
                 </div>
             </Esquema>
         );
+    }
+
+    function formatearNumero(num) {
+        const numero = parseFloat(num);
+        if (isNaN(numero)) return '0.00';
+        return numero.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
     return (
@@ -155,7 +183,11 @@ const Cuentas = () => {
                     </button>
                 </div>
 
-                <CrearCuenta isOpen={showCreateModal} onClose={() => setShowCreateModal(false)} /> {/* Modal de CrearCuenta */}
+                <CrearCuenta
+                    isOpen={showCreateModal}
+                    onClose={() => setShowCreateModal(false)}
+                    onGuardarCuenta={handleGuardarCuenta}
+                />
 
                 <ModalAlerta isOpen={showModal} onClose={() => setShowModal(false)} onGuardar={handleGuardarAlarma} montoAlarma={tempMontoAlarma} onChange={handleTempMontoAlarmaChange} />
 
@@ -164,7 +196,7 @@ const Cuentas = () => {
                     <CustomAlert
                         title="¡Atención! Cuentas con saldo bajo"
                         messages={alertas.map(cuenta =>
-                            `La cuenta ${cuenta.alias} tiene un saldo de $${cuenta.saldo.toLocaleString("es-ES")}, por debajo del límite establecido ($${Number(montoAlarma).toLocaleString("es-ES")})`
+                            `La cuenta ${cuenta.alias} tiene un saldo de $${Number(cuenta.saldo).toLocaleString("es-ES")}, por debajo del límite establecido ($${Number(montoAlarma).toLocaleString("es-ES")})`
                         )}
                         onClose={() => setShowNotification(false)}
                     />
@@ -173,7 +205,7 @@ const Cuentas = () => {
                 {/* Grid de cuentas */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                     {cuentas.map((cuenta) => (
-                        <div key={cuenta.cuenta_id} className={`card ${montoAlarma && cuenta.saldo < Number(montoAlarma) ? 'border-2 border-red-500' : ''}`}>
+                        <div key={cuenta.cuenta_id} className={`card ${montoAlarma && Number(cuenta.saldo) < Number(montoAlarma) ? 'border-2 border-red-500' : ''}`}>
                             <div className="mb-5">
                                 <h1 className="card-title">
                                     Nombre de Cuenta
@@ -193,12 +225,13 @@ const Cuentas = () => {
                                         {cuenta.moneda?.nombre}
                                     </p>
                                 </div>
-                                <div className={`m-10 text-3xl text-center ${montoAlarma && cuenta.saldo < Number(montoAlarma) ? 'text-red-400' : 'text-green-300'}`}>
+                                <div className={`m-10 text-3xl text-center ${montoAlarma && Number(cuenta.saldo) < Number(montoAlarma) ? 'text-red-400' : 'text-green-300'}`}>
                                     <h3 className="font-bold">Saldo:</h3>
                                     <p>
-                                        ${cuenta.saldo.toLocaleString("es-ES")}
+                                        ${formatearNumero(cuenta.saldo)}
                                     </p>
                                 </div>
+
                             </div>
                             <div className="buttons flex flex-wrap items-center justify-center gap-4 mt-4">
                                 <button className="button-editar">

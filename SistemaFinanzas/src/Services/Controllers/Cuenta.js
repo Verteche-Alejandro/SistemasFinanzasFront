@@ -2,7 +2,7 @@ import { GETBYID, POST } from '../Fetch';
 
 export const createCuenta = async (data) => {
     try {
-        let rsp = await POST("controller/cuentas/crear", data);
+        let rsp = await POST("/controller/cuentas/crear", data);
         return rsp || {};
     } catch (error) {
         console.error("Error en la solicitud POST en cuenta:", error);

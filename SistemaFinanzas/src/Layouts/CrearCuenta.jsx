@@ -1,136 +1,200 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Modal from "../Components/Modals/Modal";
-import { createCuenta } from "../Services/Controllers/Cuenta"; // Asegúrate de que la ruta sea correcta
+import { createCuenta, getCuentasByUsuarioId } from "../Services/Controllers/Cuenta";
+import InputForm from "../Components/Inputs/InputForm";
+import ButtonForm from "../Components/Buttons/ButtonForm";
 
 const CrearCuenta = ({ isOpen, onClose, onGuardarCuenta }) => {
-    const [newCuenta, setNewCuenta] = useState({
+    const estadoInicial = {
         alias: '',
         tipoDeCuenta: '',
-        moneda: '',
-        saldo: 0
-    });
+        saldo: '',
+        usuario: {
+            usuario_id: localStorage.getItem("usuario_id") || ''
+        },
+        moneda: {
+            moneda_id: ''
+        }
+    };
 
-    const [error, setError] = useState('');
+    const [newCuenta, setNewCuenta] = useState(estadoInicial);
+    const [errores, setErrores] = useState({});
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
 
-    // Función para manejar los cambios en los inputs
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setNewCuenta({ ...newCuenta, [name]: value });
+    const resetFormulario = () => {
+        setNewCuenta(estadoInicial);
+        setErrores({});
     };
 
-    // Función para manejar el envío del formulario
+    useEffect(() => {
+        if (!isOpen) resetFormulario();
+    }, [isOpen]);
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+
+        // Limpiamos el error cuando el usuario empieza a escribir
+        setErrores(prevErrores => ({ ...prevErrores, [name]: "" }));
+
+        setNewCuenta(prev => {
+            if (name === "saldo") {
+                const saldoNumerico = parseFloat(value);
+                if (isNaN(saldoNumerico) || saldoNumerico < 0) {
+                    setErrores(prevErrores => ({ ...prevErrores, saldo: "El saldo debe ser un número válido y mayor o igual a 0" }));
+                    return prev;
+                }
+                return { ...prev, saldo: saldoNumerico };
+            }
+
+            if (name === "moneda_id") {
+                return {
+                    ...prev,
+                    moneda: {
+                        ...prev.moneda,
+                        moneda_id: value
+                    }
+                };
+            }
+
+            return { ...prev, [name]: value };
+        });
+    };
+
+
+
+    const validarFormulario = () => {
+        let nuevosErrores = {};
+        if (!newCuenta.alias.trim()) nuevosErrores.alias = "El alias de la cuenta es obligatorio";
+        if (!newCuenta.tipoDeCuenta) nuevosErrores.tipoDeCuenta = "Debe seleccionar un tipo de cuenta";
+        if (!newCuenta.moneda.moneda_id) nuevosErrores.moneda_id = "Debe seleccionar una moneda";
+        if (Number(newCuenta.saldo) <= 0) nuevosErrores.saldo = "El saldo inicial no puede ser negativo ni 0";
+        return nuevosErrores;
+    };
+
     const handleGuardar = async () => {
         setLoading(true);
-        setError('');
+        setErrores({});
         setSuccess(false);
 
-        // Validación de los campos
-        if (!newCuenta.alias || !newCuenta.tipoDeCuenta || !newCuenta.moneda || newCuenta.saldo <= 0) {
-            setError("Todos los campos son obligatorios y el saldo debe ser mayor que 0.");
+        const nuevosErrores = validarFormulario();
+        if (Object.keys(nuevosErrores).length > 0) {
+            setErrores(nuevosErrores);
             setLoading(false);
             return;
         }
 
-        // Crear el objeto con los datos del formulario
-        const cuentaData = {
-            alias: newCuenta.alias,
-            tipoDeCuenta: newCuenta.tipoDeCuenta,
-            moneda: newCuenta.moneda,
-            saldoInicial: parseFloat(newCuenta.saldo),
-        };
+        try {
+            const cuentaData = {
+                ...newCuenta,
+                saldo: Number(newCuenta.saldo) || 0,
+                usuario: {
+                    usuario_id: Number(newCuenta.usuario.usuario_id)
+                },
+                moneda: {
+                    moneda_id: Number(newCuenta.moneda.moneda_id)
+                }
+            };
 
-        // Llama al servicio para crear la cuenta
-        const respuesta = await createCuenta(cuentaData);
+            const response = await createCuenta(cuentaData);
 
-        if (respuesta?.success) {
-            setSuccess(true);
-            onGuardarCuenta(cuentaData);  // Llama la función que pasa el componente principal
-            setTimeout(() => {
-                onClose();  // Cerrar el modal después de 2 segundos
-            }, 2000);
-        } else {
-            setError("Hubo un error al crear la cuenta. Intenta nuevamente.");
+            if (response?.message) {
+                setSuccess(true);
+                await actualizarCuentasEnSession();
+
+                setNewCuenta(estadoInicial);
+
+                setTimeout(() => {
+                    onClose();
+                    setSuccess(false);
+                }, 2000);
+            } else {
+                throw new Error("Error al crear la cuenta");
+            }
+        } catch (err) {
+            setErrores({ api: err.message || "Hubo un error al crear la cuenta" });
+        } finally {
+            setLoading(false);
         }
+    };
 
-        setLoading(false);
+    const actualizarCuentasEnSession = async () => {
+        try {
+            const id = localStorage.getItem("usuario_id");
+            const cuentasActualizadas = await getCuentasByUsuarioId(id);
+            if (cuentasActualizadas) {
+                const cuentasConSaldoNumerico = cuentasActualizadas.map(cuenta => ({
+                    ...cuenta,
+                    saldo: typeof cuenta.saldo === 'string' ? parseFloat(cuenta.saldo) : cuenta.saldo
+                }));
+                sessionStorage.setItem("cuentasUsuario", JSON.stringify(cuentasConSaldoNumerico));
+                if (onGuardarCuenta) {
+                    onGuardarCuenta(cuentasConSaldoNumerico[cuentasConSaldoNumerico.length - 1]);
+                }
+            }
+        } catch (error) {
+            setErrores({ api: "Hubo un problema al actualizar las cuentas" });
+        }
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose}>
-            <h2 className="text-xl font-semibold mb-4">Crear Nueva Cuenta</h2>
+        <Modal isOpen={isOpen} onClose={onClose} title="Crear Nueva Cuenta" width="max-w-md" className="mx-4">
+            <div className="space-y-4">
+                {errores.api && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">{errores.api}</div>}
+                {success && <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">Cuenta creada exitosamente</div>}
 
-            {/* Mostrar mensaje de error o éxito */}
-            {error && <div className="alert alert-error">{error}</div>}
-            {success && <div className="alert alert-success">Cuenta creada exitosamente.</div>}
-
-            <div className="mb-4">
-                <label className="block text-gray-700">Nombre de la Cuenta</label>
-                <input
+                <InputForm
+                    label="Nombre de la cuenta"
                     type="text"
                     name="alias"
                     value={newCuenta.alias}
                     onChange={handleInputChange}
-                    className="w-full border border-gray-300 p-2 rounded"
                     placeholder="Nombre de la cuenta"
                 />
-            </div>
+                {errores.alias && <p className="text-red-500 text-sm">{errores.alias}</p>}
 
-            <div className="mb-4">
-                <label className="block text-gray-700">Tipo de Cuenta</label>
+                <label className="block text-gray-700 mb-2">Tipo de Cuenta</label>
                 <select
                     name="tipoDeCuenta"
                     value={newCuenta.tipoDeCuenta}
                     onChange={handleInputChange}
-                    className="w-full border border-gray-300 p-2 rounded"
+                    className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                     <option value="">Selecciona un tipo de cuenta</option>
                     <option value="Ahorro">Ahorro</option>
                     <option value="Corriente">Corriente</option>
                 </select>
-            </div>
+                {errores.tipoDeCuenta && <p className="text-red-500 text-sm">{errores.tipoDeCuenta}</p>}
 
-            <div className="mb-4">
-                <label className="block text-gray-700">Moneda</label>
+                <label className="block text-gray-700 mb-2">Moneda</label>
                 <select
-                    name="moneda"
-                    value={newCuenta.moneda}
+                    name="moneda_id"
+                    value={newCuenta.moneda.moneda_id}
                     onChange={handleInputChange}
-                    className="w-full border border-gray-300 p-2 rounded"
+                    className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                     <option value="">Selecciona una moneda</option>
-                    <option value="ARS">ARS</option>
-                    <option value="USD">USD</option>
+                    <option value="1">ARS</option>
+                    <option value="2">USD</option>
                 </select>
-            </div>
+                {errores.moneda_id && <p className="text-red-500 text-sm">{errores.moneda_id}</p>}
 
-            <div className="mb-4">
-                <label className="block text-gray-700">Saldo Inicial</label>
-                <input
+                <InputForm
+                    label="Saldo inicial"
                     type="number"
                     name="saldo"
                     value={newCuenta.saldo}
                     onChange={handleInputChange}
-                    className="w-full border border-gray-300 p-2 rounded"
                     placeholder="Saldo inicial"
+                    min="0"
+                    step="0.01"
                 />
-            </div>
+                {errores.saldo && <p className="text-red-500 text-sm">{errores.saldo}</p>}
 
-            <div className="flex justify-end gap-4">
-                <button
-                    onClick={onClose}
-                    className="bg-gray-400 text-white px-6 py-3 rounded-lg"
-                >
-                    Cancelar
-                </button>
-                <button
-                    onClick={handleGuardar}
-                    className="bg-blue-500 text-white px-6 py-3 rounded-lg"
-                    disabled={loading}
-                >
-                    {loading ? "Cargando..." : "Guardar Cuenta"}
-                </button>
+                <div className="flex justify-end gap-4 mt-6">
+                    <ButtonForm text="Cancelar" onClick={onClose} className="button-editar" />
+                    <ButtonForm text="Guardar Cuenta" onClick={handleGuardar} disabled={loading}>{loading ? "Creando..." : "Guardar Cuenta"}</ButtonForm>
+                </div>
             </div>
         </Modal>
     );
