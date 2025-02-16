@@ -9,6 +9,7 @@ const Cuentas = () => {
     const [cuentas, setCuentas] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [errorAlarma, setErrorAlarma] = useState(null); // Nuevo estado para el error de la alerta de saldo
     const [montoAlarma, setMontoAlarma] = useState('');
     const [alertas, setAlertas] = useState([]);
     const [showNotification, setShowNotification] = useState(false);
@@ -78,20 +79,32 @@ const Cuentas = () => {
         }
     }, [cuentas, montoAlarma]);
 
+    useEffect(() => {
+        setErrorAlarma(""); // Limpia el error al abrir el modal
+    }, []);
+
     const handleTempMontoAlarmaChange = (e) => {
         const valor = e.target.value;
-        if (valor === '' || (!isNaN(valor) && valor >= 0)) {
+
+        // Verifica si es un número válido y mayor a 0
+        if (valor === "" || (!isNaN(valor) && Number(valor) > 0)) {
             setTempMontoAlarma(valor);
+            setErrorAlarma(""); // Limpia el error si la entrada es válida
+        } else {
+            setErrorAlarma("El monto debe ser un número mayor a 0.");
         }
     };
 
     const handleGuardarAlarma = () => {
-        if (tempMontoAlarma) {
-            const id = localStorage.getItem("usuario_id");
-            sessionStorage.setItem(`montoAlarma_${id}`, tempMontoAlarma);
-            setMontoAlarma(tempMontoAlarma);
-            setShowModal(false);
+        if (!tempMontoAlarma || isNaN(tempMontoAlarma) || Number(tempMontoAlarma) <= 0) {
+            setErrorAlarma("Debe ingresar un número válido mayor a 0.");
+            return;
         }
+
+        const id = localStorage.getItem("usuario_id");
+        sessionStorage.setItem(`montoAlarma_${id}`, tempMontoAlarma);
+        setMontoAlarma(tempMontoAlarma);
+        setShowModal(false);
     };
 
     const handleGuardarCuenta = (nuevaCuenta) => {
@@ -146,13 +159,7 @@ const Cuentas = () => {
 
                 {/* Botón para mostrar el modal de establecer alerta de saldo */}
                 <div className="mb-6 max-w-md mx-auto w-full">
-                    <button
-                        onClick={() => {
-                            setTempMontoAlarma(montoAlarma);
-                            setShowModal(true);
-                        }}
-                        className="w-full bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-all duration-300 flex items-center justify-center gap-2"
-                    >
+                    <button onClick={() => { setTempMontoAlarma(montoAlarma); setShowModal(true); }} className="w-full bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-all duration-300 flex items-center justify-center gap-2">
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path
                                 strokeLinecap="round"
@@ -189,7 +196,7 @@ const Cuentas = () => {
                     onGuardarCuenta={handleGuardarCuenta}
                 />
 
-                <ModalAlerta isOpen={showModal} onClose={() => setShowModal(false)} onGuardar={handleGuardarAlarma} montoAlarma={tempMontoAlarma} onChange={handleTempMontoAlarmaChange} />
+                <ModalAlerta errores={errorAlarma} isOpen={showModal} onClose={() => setShowModal(false)} onGuardar={handleGuardarAlarma} montoAlarma={tempMontoAlarma} onChange={handleTempMontoAlarmaChange} />
 
                 {/* Alertas */}
                 {showNotification && (
@@ -203,7 +210,7 @@ const Cuentas = () => {
                 )}
 
                 {/* Grid de cuentas */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                <div className="flex flex-row flex-wrap gap-4">
                     {cuentas.map((cuenta) => (
                         <div key={cuenta.cuenta_id} className={`card ${montoAlarma && Number(cuenta.saldo) < Number(montoAlarma) ? 'border-2 border-red-500' : ''}`}>
                             <div className="mb-5">
