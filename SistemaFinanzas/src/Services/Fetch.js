@@ -2,7 +2,6 @@ const backendurl = 'http://localhost:8081';
 
 export async function POST(url, data) {
     const token = localStorage.getItem('token');
-    console.log("Token JWT:", token);  // Verificar que el token no esté vacío
 
     try {
         const response = await fetch(backendurl + url, {
@@ -15,34 +14,27 @@ export async function POST(url, data) {
             body: JSON.stringify(data)
         });
 
-        console.log("Código de estado HTTP:", response.status);
-
-        // Si la respuesta no es exitosa, retorna un error con el mensaje del servidor
+        // Para respuestas no exitosas, intentar obtener el mensaje de error
         if (!response.ok) {
-            let errorMsg = "Error en la solicitud";
+            const errorData = await response.text();
+            // Intentar parsear como JSON si es posible
             try {
-                const errorData = await response.json();
-                errorMsg = errorData.message || response.statusText;
+                const jsonError = JSON.parse(errorData);
+                throw { status: response.status, message: jsonError.message || errorData };
             } catch (e) {
-                errorMsg = response.statusText; // Si la respuesta no es JSON, usa el texto de estado
+                // Si no es JSON, usar el texto directamente
+                throw { status: response.status, message: errorData };
             }
-            console.log("Error en la solicitud POST:", errorMsg);
-            return { error: errorMsg };
         }
 
-        // Si la respuesta es un 204 (No Content), retorna un mensaje manualmente
-        if (response.status === 204) {
-            console.log("El servidor devolvió 204 No Content.");
-            return { message: "Operación exitosa" };
-        }
-
-        // Intentar convertir la respuesta en JSON
+        // Para respuestas exitosas
         const jsonResponse = await response.json();
-        console.log("Respuesta JSON del servidor:", jsonResponse);
         return jsonResponse;
     } catch (error) {
-        console.log("Error en la solicitud POST en catch:", error);
-        return { error: "Error de conexión con el servidor" };
+        if (error.message) {
+            throw error;
+        }
+        throw { status: 500, message: "Error de conexión con el servidor" };
     }
 }
 
