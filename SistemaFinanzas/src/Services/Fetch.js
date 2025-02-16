@@ -73,18 +73,39 @@ export async function GETBYID(url) {
 }
 
 export async function PATCH(url, data) {
-    return await fetch(backendurl + url, {
-        method: 'PATCH',
-        mode: 'cors',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify(data)
-    })
-        .then((res) => res.json())
-        .then((res) => res)
-        .catch((err) => console.log(err));
+    const token = localStorage.getItem('token');
+    if (!token) {
+        console.error("Error: No se encontró el token en localStorage.");
+        throw { status: 401, message: "No autorizado. Debe iniciar sesión." };
+    }
+
+    try {
+        const response = await fetch(backendurl + url, {
+            method: 'PATCH',
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(data)
+        });
+
+        // Primero obtenemos la respuesta en JSON
+        const responseData = await response.json();
+
+        // Verificamos si la respuesta no fue exitosa
+        if (!response.ok) {
+            throw {
+                status: response.status,
+                message: responseData.message || 'No se pudo actualizar'
+            };
+        }
+
+        return responseData;
+    } catch (error) {
+        console.error("Error en PATCH:", error);
+        throw error;
+    }
 }
 
 export async function DELETE(url, data) {

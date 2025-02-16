@@ -12,11 +12,26 @@ export const getUsuarioById = async (usuario_id) => {
 
 export const updateUsuario = async (usuario_id, data) => {
     try {
-        let rsp = await PATCH(`/controller/usuarios/${usuario_id}`, data);
-        return rsp || {};
+        const response = await PATCH(`/controller/usuarios/${usuario_id}`, data);
+
+        if (!response) {
+            throw new Error("No se recibió respuesta del servidor");
+        }
+
+        // Retornamos la respuesta completa
+        return response;
     } catch (error) {
-        console.error("Error en la solicitud PUT en usuario:", error);
-        return {};
+        console.error("Error en la solicitud PATCH en usuario:", error);
+
+        // Reformateamos el error para mantener consistencia
+        if (error.status === 409) {
+            throw {
+                status: 409,
+                message: "El usuario o correo electrónico ya está en uso"
+            };
+        }
+
+        throw error;
     }
 }
 

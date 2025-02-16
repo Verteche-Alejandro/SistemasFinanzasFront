@@ -25,7 +25,15 @@ const PerfilUsuario = ({ info }) => {
         confirmarContraseña: ""
     });
 
-    // Actualizar estado cuando cambia info
+    const [errores, setErrores] = useState({
+        nuevoNombre: "",
+        nuevoCorreo: "",
+        nuevaContraseña: "",
+        confirmarContraseña: "",
+        general: ""
+    });
+    const [success, setSuccess] = useState(false);
+
     useEffect(() => {
         if (info) {
             const userData = {
@@ -44,10 +52,81 @@ const PerfilUsuario = ({ info }) => {
         }
     }, [info]);
 
+    const validarFormularioEdicion = () => {
+        const nuevoErrores = {
+            nuevoNombre: "",
+            nuevoCorreo: "",
+            general: ""
+        };
+
+        let esValido = true;
+
+        // Validar campos vacíos
+        if (!formData.nuevoNombre.trim() || !formData.nuevoCorreo.trim()) {
+            nuevoErrores.general = "Todos los campos son obligatorios";
+            esValido = false;
+        }
+
+        // Validar longitud del nombre de usuario
+        if (formData.nuevoNombre.trim().length < 3 || formData.nuevoNombre.trim().length > 20) {
+            nuevoErrores.nuevoNombre = "El nombre de usuario debe tener entre 3 y 20 caracteres";
+            esValido = false;
+        }
+
+        // Validar formato de email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(formData.nuevoCorreo.trim())) {
+            nuevoErrores.nuevoCorreo = "El formato del correo electrónico no es válido";
+            esValido = false;
+        }
+
+        setErrores(prev => ({ ...prev, ...nuevoErrores }));
+        return esValido;
+    };
+
+    const validarFormularioContraseña = () => {
+        const nuevoErrores = {
+            nuevaContraseña: "",
+            confirmarContraseña: "",
+            general: ""
+        };
+
+        let esValido = true;
+
+        // Validar campos vacíos
+        if (!formData.nuevaContraseña || !formData.confirmarContraseña) {
+            nuevoErrores.general = "Todos los campos son obligatorios";
+            esValido = false;
+        }
+
+        // Validar contraseña
+        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+        if (!passwordRegex.test(formData.nuevaContraseña)) {
+            nuevoErrores.nuevaContraseña = "La contraseña debe tener al menos 8 caracteres, incluyendo letras y números";
+            esValido = false;
+        }
+
+        // Validar que las contraseñas coincidan
+        if (formData.nuevaContraseña !== formData.confirmarContraseña) {
+            nuevoErrores.confirmarContraseña = "Las contraseñas no coinciden";
+            esValido = false;
+        }
+
+        setErrores(prev => ({ ...prev, ...nuevoErrores }));
+        return esValido;
+    };
+
     const handleModalToggle = useCallback((modalName, value) => {
         setModals(prev => ({ ...prev, [modalName]: value }));
-        // Resetear form data cuando se cierra el modal
+        // Resetear errores y form data cuando se cierra el modal
         if (!value) {
+            setErrores({
+                nuevoNombre: "",
+                nuevoCorreo: "",
+                nuevaContraseña: "",
+                confirmarContraseña: "",
+                general: ""
+            });
             setFormData(prev => ({
                 ...prev,
                 nuevaContraseña: "",
@@ -58,68 +137,98 @@ const PerfilUsuario = ({ info }) => {
 
     const handleInputChange = useCallback((field, value) => {
         setFormData(prev => ({ ...prev, [field]: value }));
+        // Limpiar error específico del campo
+        setErrores(prev => ({ ...prev, [field]: "", general: "" }));
     }, []);
 
     const guardarCambios = useCallback(async () => {
-        const { nuevoNombre, nuevoCorreo } = formData;
-
-        // Validaciones
-        if (!nuevoNombre.trim() || !nuevoCorreo.trim()) {
-            alert("Nombre y correo son requeridos");
-            return;
-        }
-
         try {
+            setErrores({
+                nuevoNombre: "",
+                nuevoCorreo: "",
+                general: ""
+            });
+
+            if (!validarFormularioEdicion()) {
+                return;
+            }
+
+            // Verificar si realmente hay cambios
+            if (formData.nuevoNombre === usuario.usuario &&
+                formData.nuevoCorreo === usuario.email) {
+                handleModalToggle('editando', false);
+                return;
+            }
+
             const data = {
-                usuario: nuevoNombre.trim(),
-                email: nuevoCorreo.trim(),
+                usuario: formData.nuevoNombre.trim(),
+                email: formData.nuevoCorreo.trim()
             };
 
             const respuesta = await updateUsuario(info?.usuario_id, data);
 
-            if (respuesta) {
-                setUsuario(prev => ({ ...prev, ...data }));
-                handleModalToggle('editando', false);
+            if (respuesta.token) {
+                setSuccess(true);
+                setUsuario(prev => ({
+                    ...prev,
+                    usuario: data.usuario,
+                    email: data.email
+                }));
+
+                localStorage.setItem("token", respuesta.token);
+
+                setTimeout(() => {
+                    setSuccess(false);
+                    handleModalToggle('editando', false);
+                }, 2000);
             }
         } catch (error) {
             console.error("Error al actualizar perfil:", error);
-            alert("Error al actualizar el perfil");
+            setErrores(prev => ({
+                ...prev,
+                general: error.message || "Error al actualizar el perfil"
+            }));
         }
-    }, [formData, info?.usuario_id, handleModalToggle]);
+    }, [formData, info?.usuario_id, handleModalToggle, usuario, validarFormularioEdicion]);
 
     const cambiarContraseña = useCallback(async () => {
-        const { nuevaContraseña, confirmarContraseña } = formData;
-
-        // Validaciones
-        if (!nuevaContraseña || !confirmarContraseña) {
-            alert("Ambos campos de contraseña son requeridos");
-            return;
-        }
-
-        if (nuevaContraseña !== confirmarContraseña) {
-            alert("Las contraseñas no coinciden");
-            return;
-        }
-
         try {
+            // Limpiar errores previos
+            setErrores({
+                nuevoNombre: "",
+                nuevoCorreo: "",
+                nuevaContraseña: "",
+                confirmarContraseña: "",
+                general: ""
+            });
+
+            // Validar formulario
+            if (!validarFormularioContraseña()) {
+                return;
+            }
+
             const respuesta = await updateClave(info?.usuario_id, {
-                clave: nuevaContraseña
+                clave: formData.nuevaContraseña
             });
 
             if (respuesta) {
+                setSuccess(true);
                 alert("Contraseña actualizada exitosamente");
                 handleModalToggle('cambiandoContraseña', false);
 
-                // Cerrar sesión después de un breve delay
                 setTimeout(() => {
-                    alert("Se cerrara la sesion para aplicar los cambios");
+                    setSuccess(false);
+                    alert("Se cerrará la sesión para aplicar los cambios");
                     localStorage.removeItem("token");
                     window.location.reload();
                 }, 1500);
             }
         } catch (error) {
             console.error("Error al cambiar contraseña:", error);
-            alert("Error al actualizar la contraseña");
+            setErrores(prev => ({
+                ...prev,
+                general: "Error al actualizar la contraseña"
+            }));
         }
     }, [formData, info?.usuario_id, handleModalToggle]);
 
@@ -149,27 +258,58 @@ const PerfilUsuario = ({ info }) => {
                 </div>
             </div>
 
-            <Modal
-                isOpen={modals.editando}
-                onClose={() => handleModalToggle('editando', false)}
-                title="Editar Perfil"
-                width="w-96"
-            >
+            <Modal isOpen={modals.editando} onClose={() => handleModalToggle('editando', false)} title="Editar Perfil" width="w-96">
+                <div className="absolute left-0 top-5 cursor-pointer group">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="w-5 h-5"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M11.25 11.25l.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"
+                        />
+                    </svg>
+
+                    {/* Tooltip */}
+                    <div className="absolute hidden group-hover:block bg-black text-white text-xs rounded py-1 px-2 w-48 text-center left-1/2 transform -translate-x-1/2 top-full mt-1">
+                        Si se realizan cambios, la próxima vez deberá iniciar sesión con los mismos.
+                    </div>
+                </div>
                 <div className="space-y-4">
-                    <InputForm
-                        type="text"
-                        label="Nuevo Nombre"
-                        value={formData.nuevoNombre}
-                        onChange={(e) => handleInputChange('nuevoNombre', e.target.value)}
-                        placeholder="Nuevo nombre"
-                    />
-                    <InputForm
-                        type="email"
-                        label="Nuevo Correo"
-                        value={formData.nuevoCorreo}
-                        onChange={(e) => handleInputChange('nuevoCorreo', e.target.value)}
-                        placeholder="Nuevo correo"
-                    />
+                    {errores.general && (
+                        <p className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">{errores.general}</p>
+                    )}
+                    {success && (<p className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">Informacion actualizada exitosamente</p>)}
+
+                    <div>
+                        <InputForm
+                            type="text"
+                            label="Nuevo Nombre"
+                            onChange={(e) => handleInputChange('nuevoNombre', e.target.value)}
+                            placeholder="Nuevo nombre"
+                        />
+                        {errores.nuevoNombre && (
+                            <p className="text-red-600 text-sm mt-1">{errores.nuevoNombre}</p>
+                        )}
+                    </div>
+
+                    <div>
+                        <InputForm
+                            type="email"
+                            label="Nuevo Correo"
+                            onChange={(e) => handleInputChange('nuevoCorreo', e.target.value)}
+                            placeholder="Nuevo correo"
+                        />
+                        {errores.nuevoCorreo && (
+                            <p className="text-red-600 text-sm mt-1">{errores.nuevoCorreo}</p>
+                        )}
+                    </div>
+
                     <div className="flex justify-between mt-4">
                         <button
                             className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500 transition-colors"
@@ -194,20 +334,36 @@ const PerfilUsuario = ({ info }) => {
                 width="w-96"
             >
                 <div className="space-y-4">
-                    <InputForm
-                        type="password"
-                        label="Nueva Contraseña"
-                        value={formData.nuevaContraseña}
-                        onChange={(e) => handleInputChange('nuevaContraseña', e.target.value)}
-                        placeholder="Nueva contraseña"
-                    />
-                    <InputForm
-                        type="password"
-                        label="Confirmar Contraseña"
-                        value={formData.confirmarContraseña}
-                        onChange={(e) => handleInputChange('confirmarContraseña', e.target.value)}
-                        placeholder="Confirmar nueva contraseña"
-                    />
+                    {errores.general && (
+                        <p className="text-red-600 text-sm">{errores.general}</p>
+                    )}
+
+                    <div>
+                        <InputForm
+                            type="password"
+                            label="Nueva Contraseña"
+                            value={formData.nuevaContraseña}
+                            onChange={(e) => handleInputChange('nuevaContraseña', e.target.value)}
+                            placeholder="Nueva contraseña"
+                        />
+                        {errores.nuevaContraseña && (
+                            <p className="text-red-600 text-sm mt-1">{errores.nuevaContraseña}</p>
+                        )}
+                    </div>
+
+                    <div>
+                        <InputForm
+                            type="password"
+                            label="Confirmar Contraseña"
+                            value={formData.confirmarContraseña}
+                            onChange={(e) => handleInputChange('confirmarContraseña', e.target.value)}
+                            placeholder="Confirmar nueva contraseña"
+                        />
+                        {errores.confirmarContraseña && (
+                            <p className="text-red-600 text-sm mt-1">{errores.confirmarContraseña}</p>
+                        )}
+                    </div>
+
                     <div className="flex justify-between mt-4">
                         <button
                             className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500 transition-colors"
