@@ -71,9 +71,6 @@ const TableTransac = ({ cuentas }) => {
                                 onClick={() => eliminar(transaccion.transac_id)}>
                                 Eliminar
                             </button>
-                            <button className="rounded-lg bg-yellow-500 p-2 text-white">
-                                Modificar
-                            </button>
                         </td>
                     </tr>
                 ))
