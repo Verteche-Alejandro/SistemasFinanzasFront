@@ -12,8 +12,11 @@ const ReporteTransac = ({ cuenta_id }) => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
+        if (!cuenta_id) return; // Evita hacer la petición si cuenta_id aún no está definido
+
         const obtenerTotales = async () => {
             try {
+                console.log("Llamando a la API con cuenta_id:", cuenta_id);
                 const response = await generarReporte(cuenta_id);
                 if (!response) return;
                 setTotales(response);
@@ -26,6 +29,7 @@ const ReporteTransac = ({ cuenta_id }) => {
 
         obtenerTotales();
     }, [cuenta_id]);
+
 
     if (loading) {
         return <div>Loading...</div>;
