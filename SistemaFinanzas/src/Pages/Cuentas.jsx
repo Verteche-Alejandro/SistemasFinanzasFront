@@ -4,6 +4,7 @@ import { getCuentasByUsuarioId } from "../Services/Controllers/Cuenta";
 import CustomAlert from "../Components/CustomAlert";
 import ModalAlerta from "../Layouts/ModalAlerta";
 import CrearCuenta from "../Layouts/CrearCuenta";
+import { deleteCuenta } from "../Services/Controllers/Cuenta";
 
 const Cuentas = () => {
     const [cuentas, setCuentas] = useState([]);
@@ -16,6 +17,20 @@ const Cuentas = () => {
     const [tempMontoAlarma, setTempMontoAlarma] = useState('');
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [erroresAlarma, setErroresAlarma] = useState('');
+
+    const eliminarCuenta = async (cuenta_id) => {
+        try {
+            const response = await deleteCuenta(cuenta_id);
+            if (!response) {
+                throw new Error("No se pudo eliminar la cuenta");
+            }
+
+            setCuentas((prevCuentas) => prevCuentas.filter((cuenta) => cuenta.cuenta_id !== cuenta_id));
+        } catch (error) {
+            console.error("Error:", error);
+            setError(error.message);
+        }
+    }
 
     useEffect(() => {
         const cargarCuentas = async () => {
@@ -254,7 +269,7 @@ const Cuentas = () => {
                                 <button className="button-editar">
                                     Editar
                                 </button>
-                                <button className="button-editar">
+                                <button onClick={() => eliminarCuenta(cuenta.cuenta_id)} className="button-editar">
                                     Eliminar
                                 </button>
                             </div>
