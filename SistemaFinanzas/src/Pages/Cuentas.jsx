@@ -166,115 +166,110 @@ const Cuentas = () => {
 
     return (
         <Esquema>
-            <div className="flex flex-col p-6 justify-center">
-                <div className="flex justify-center items-center mb-8">
-                    <h1 className="text-4xl font-semibold text-gray-800">
-                        Mis Cuentas
-                    </h1>
-                </div>
+            {/* Contenedor principal con h-screen y overflow-auto */}
+            <div className="h-screen overflow-auto">
+                <div className="flex flex-col p-6 justify-center">
+                    <div className="flex justify-center items-center mb-8">
+                        <h1 className="text-4xl font-semibold text-gray-800">
+                            Mis Cuentas
+                        </h1>
+                    </div>
 
-                <div className="mb-6 max-w-md mx-auto w-full">
-                    <button
-                        onClick={() => setShowModal(true)}
-                        className="w-full bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-all duration-300 flex items-center justify-center gap-2"
-                    >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                            />
-                        </svg>
-                        {montoAlarma ? 'Modificar Alerta (Actual: $' + Number(montoAlarma).toLocaleString("es-ES") + ')' : 'Establecer Alerta de Saldo'}
-                    </button>
-                </div>
+                    <div className="mb-6 max-w-md mx-auto w-full">
+                        <button
+                            onClick={() => setShowModal(true)}
+                            className="w-full bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-all duration-300 flex items-center justify-center gap-2"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                                />
+                            </svg>
+                            {montoAlarma ? 'Modificar Alerta (Actual: $' + Number(montoAlarma).toLocaleString("es-ES") + ')' : 'Establecer Alerta de Saldo'}
+                        </button>
+                    </div>
 
-                <div className="mb-6 max-w-md mx-auto w-full">
-                    <button
-                        onClick={() => setShowCreateModal(true)}
-                        className="w-full bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-all duration-300 flex items-center justify-center gap-2"
-                    >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M12 4v16m8-8H4"
-                            />
-                        </svg>
-                        Crear Nueva Cuenta
-                    </button>
-                </div>
+                    <div className="mb-6 max-w-md mx-auto w-full">
+                        <button
+                            onClick={() => setShowCreateModal(true)}
+                            className="w-full animated-button flex items-center justify-center gap-2">
+                            Crear Nueva Cuenta
+                        </button>
+                    </div>
 
-                <ModalAlerta
-                    isOpen={showModal}
-                    onClose={() => {
-                        setShowModal(false);
-                        setErroresAlarma('');
-                        setTempMontoAlarma(montoAlarma);
-                    }}
-                    onGuardar={handleGuardarAlarma}
-                    montoAlarma={tempMontoAlarma}
-                    onChange={handleTempMontoAlarmaChange}
-                    errores={erroresAlarma}
-                />
-
-                <CrearCuenta
-                    isOpen={showCreateModal}
-                    onClose={() => setShowCreateModal(false)}
-                    onGuardarCuenta={handleGuardarCuenta}
-                />
-
-                {showNotification && (
-                    <CustomAlert
-                        title="¡Atención! Cuentas con saldo bajo"
-                        messages={alertas.map(cuenta =>
-                            `La cuenta ${cuenta.alias} tiene un saldo de $${Number(cuenta.saldo).toLocaleString("es-ES")}, por debajo del límite establecido ($${Number(montoAlarma).toLocaleString("es-ES")})`
-                        )}
-                        onClose={() => setShowNotification(false)}
+                    <ModalAlerta
+                        isOpen={showModal}
+                        onClose={() => {
+                            setShowModal(false);
+                            setErroresAlarma('');
+                            setTempMontoAlarma(montoAlarma);
+                        }}
+                        onGuardar={handleGuardarAlarma}
+                        montoAlarma={tempMontoAlarma}
+                        onChange={handleTempMontoAlarmaChange}
+                        errores={erroresAlarma}
                     />
-                )}
 
-                <div className="flex flex-row flex-wrap gap-4">
-                    {cuentas.map((cuenta) => (
-                        <div key={cuenta.cuenta_id} className={`card ${montoAlarma && Number(cuenta.saldo) < Number(montoAlarma) ? 'border-2 border-red-500' : ''}`}>
-                            <div className="mb-5">
-                                <h1 className="card-title">
-                                    Nombre de Cuenta
-                                </h1>
-                                <p>
-                                    {cuenta.alias}
-                                </p>
-                            </div>
-                            <div className="flex flex-col items-center justify-start gap-4">
-                                <div>
-                                    <h3 className="font-bold">Tipo de Cuenta</h3>
-                                    <p>{cuenta.tipoDeCuenta}</p>
-                                </div>
-                                <div>
-                                    <h3 className="font-bold">Moneda</h3>
+                    <CrearCuenta
+                        isOpen={showCreateModal}
+                        onClose={() => setShowCreateModal(false)}
+                        onGuardarCuenta={handleGuardarCuenta}
+                    />
+
+                    {showNotification && (
+                        <CustomAlert
+                            title="¡Atención! Cuentas con saldo bajo"
+                            messages={alertas.map(cuenta =>
+                                `La cuenta ${cuenta.alias} tiene un saldo de $${Number(cuenta.saldo).toLocaleString("es-ES")}, por debajo del límite establecido ($${Number(montoAlarma).toLocaleString("es-ES")})`
+                            )}
+                            onClose={() => setShowNotification(false)}
+                        />
+                    )}
+
+                    {/* Grid de tarjetas */}
+                    <div className="flex md:flex-row flex-col md:flex-wrap gap-4">
+                        {cuentas.map((cuenta) => (
+                            <div key={cuenta.cuenta_id} className={`card ${montoAlarma && Number(cuenta.saldo) < Number(montoAlarma) ? 'border-2 border-red-500' : ''}`}>
+                                <div className="mb-5">
+                                    <h1 className="card-title">
+                                        Nombre de Cuenta
+                                    </h1>
                                     <p>
-                                        {cuenta.moneda?.nombre}
+                                        {cuenta.alias}
                                     </p>
                                 </div>
-                                <div className={`m-10 text-3xl text-center ${montoAlarma && Number(cuenta.saldo) < Number(montoAlarma) ? 'text-red-400' : 'text-green-300'}`}>
-                                    <h3 className="font-bold">Saldo:</h3>
-                                    <p>
-                                        ${formatearNumero(cuenta.saldo)}
-                                    </p>
+                                <div className="flex flex-col items-center justify-start gap-4">
+                                    <div>
+                                        <h3 className="font-bold">Tipo de Cuenta</h3>
+                                        <p>{cuenta.tipoDeCuenta}</p>
+                                    </div>
+                                    <div>
+                                        <h3 className="font-bold">Moneda</h3>
+                                        <p>
+                                            {cuenta.moneda?.nombre}
+                                        </p>
+                                    </div>
+                                    <div className={`m-10 text-3xl text-center ${montoAlarma && Number(cuenta.saldo) < Number(montoAlarma) ? 'text-red-400' : 'text-green-300'}`}>
+                                        <h3 className="font-bold">Saldo:</h3>
+                                        <p>
+                                            ${formatearNumero(cuenta.saldo)}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="buttons flex flex-wrap items-center justify-center gap-4 mt-4">
+                                    <button className="button-cancelar">
+                                        Editar
+                                    </button>
+                                    <button onClick={() => eliminarCuenta(cuenta.cuenta_id)} className="button-cancelar">
+                                        Eliminar
+                                    </button>
                                 </div>
                             </div>
-                            <div className="buttons flex flex-wrap items-center justify-center gap-4 mt-4">
-                                <button className="button-editar">
-                                    Editar
-                                </button>
-                                <button onClick={() => eliminarCuenta(cuenta.cuenta_id)} className="button-editar">
-                                    Eliminar
-                                </button>
-                            </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
             </div>
         </Esquema>

@@ -232,11 +232,11 @@ const NuevaTransac = ({ isOpen, onClose, cuentas, onActualizarCuentas }) => {
                         text="Cancelar"
                         type="button"
                         onClick={onClose}
-                        className="button-editar"
+                        className="button-cancelar"
                     />
                     <ButtonForm
                         text="Registrar Transacción"
-                        type="submit"
+                        type="button"
                     />
                 </div>
             </form>
