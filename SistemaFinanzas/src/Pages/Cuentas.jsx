@@ -3,19 +3,19 @@ import Esquema from "../Layouts/Esquema";
 import { getCuentasByUsuarioId } from "../Services/Controllers/Cuenta";
 import CustomAlert from "../Components/CustomAlert";
 import ModalAlerta from "../Layouts/ModalAlerta";
-import CrearCuenta from "../Layouts/CrearCuenta"; // Asegúrate de tener el componente CrearCuenta importado
+import CrearCuenta from "../Layouts/CrearCuenta";
 
 const Cuentas = () => {
     const [cuentas, setCuentas] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [errorAlarma, setErrorAlarma] = useState(null); // Nuevo estado para el error de la alerta de saldo
     const [montoAlarma, setMontoAlarma] = useState('');
     const [alertas, setAlertas] = useState([]);
     const [showNotification, setShowNotification] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [tempMontoAlarma, setTempMontoAlarma] = useState('');
-    const [showCreateModal, setShowCreateModal] = useState(false); // Nuevo estado para el modal de CrearCuenta
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [erroresAlarma, setErroresAlarma] = useState('');
 
     useEffect(() => {
         const cargarCuentas = async () => {
@@ -32,27 +32,25 @@ const Cuentas = () => {
 
                 if (!cuentasParseadas || !cuentasParseadas.length || cuentasParseadas[0]?.usuario_id !== id) {
                     const response = await getCuentasByUsuarioId(id);
-                    // Aquí está faltando guardar las cuentas
                     if (!response) {
                         throw new Error("No se pudieron obtener las cuentas");
                     }
 
-                    // Convertir saldos a números
                     const cuentasConSaldoNumerico = response.map(cuenta => ({
                         ...cuenta,
                         saldo: typeof cuenta.saldo === 'string' ? parseFloat(cuenta.saldo) : cuenta.saldo
                     }));
 
-                    // Guardar en sessionStorage
                     sessionStorage.setItem("cuentasUsuario", JSON.stringify(cuentasConSaldoNumerico));
-
-                    // Actualizar el estado
                     setCuentas(cuentasConSaldoNumerico);
+                } else {
+                    setCuentas(cuentasParseadas);
                 }
 
                 const montoAlarmaSession = sessionStorage.getItem(`montoAlarma_${id}`);
                 if (montoAlarmaSession) {
                     setMontoAlarma(montoAlarmaSession);
+                    setTempMontoAlarma(montoAlarmaSession);
                 }
 
             } catch (error) {
@@ -65,6 +63,62 @@ const Cuentas = () => {
 
         cargarCuentas();
     }, []);
+
+    const validarMontoAlarma = (monto) => {
+        if (!monto || monto.trim() === '') {
+            setErroresAlarma("El monto es obligatorio");
+            return false;
+        }
+
+        const montoNumerico = Number(monto);
+        if (isNaN(montoNumerico)) {
+            setErroresAlarma("El monto debe ser un número válido");
+            return false;
+        }
+
+        if (montoNumerico <= 0) {
+            setErroresAlarma("El monto debe ser mayor a 0");
+            return false;
+        }
+
+        if (montoNumerico > 1000000000) {
+            setErroresAlarma("El monto no puede ser mayor a 1.000.000.000");
+            return false;
+        }
+
+        setErroresAlarma('');
+        return true;
+    };
+
+    const handleTempMontoAlarmaChange = (e) => {
+        const valor = e.target.value;
+        setTempMontoAlarma(valor);
+
+        // Limpiar error al cambiar el valor
+        if (erroresAlarma) {
+            setErroresAlarma('');
+        }
+    };
+
+    const handleGuardarAlarma = () => {
+        if (!validarMontoAlarma(tempMontoAlarma)) {
+            return;
+        }
+
+        const id = localStorage.getItem("usuario_id");
+        sessionStorage.setItem(`montoAlarma_${id}`, tempMontoAlarma);
+        setMontoAlarma(tempMontoAlarma);
+        setShowModal(false);
+        setErroresAlarma('');
+    };
+
+    const handleGuardarCuenta = (nuevaCuenta) => {
+        setCuentas(prevCuentas => {
+            const cuentasActualizadas = [...prevCuentas, nuevaCuenta];
+            sessionStorage.setItem("cuentasUsuario", JSON.stringify(cuentasActualizadas));
+            return cuentasActualizadas;
+        });
+    };
 
     useEffect(() => {
         if (montoAlarma) {
@@ -79,64 +133,11 @@ const Cuentas = () => {
         }
     }, [cuentas, montoAlarma]);
 
-    useEffect(() => {
-        setErrorAlarma(""); // Limpia el error al abrir el modal
-    }, []);
-
-    const handleTempMontoAlarmaChange = (e) => {
-        const valor = e.target.value;
-
-        // Verifica si es un número válido y mayor a 0
-        if (valor === "" || (!isNaN(valor) && Number(valor) > 0)) {
-            setTempMontoAlarma(valor);
-            setErrorAlarma(""); // Limpia el error si la entrada es válida
-        } else {
-            setErrorAlarma("El monto debe ser un número mayor a 0.");
-        }
-    };
-
-    const handleGuardarAlarma = () => {
-        if (!tempMontoAlarma || isNaN(tempMontoAlarma) || Number(tempMontoAlarma) <= 0) {
-            setErrorAlarma("Debe ingresar un número válido mayor a 0.");
-            return;
-        }
-
-        const id = localStorage.getItem("usuario_id");
-        sessionStorage.setItem(`montoAlarma_${id}`, tempMontoAlarma);
-        setMontoAlarma(tempMontoAlarma);
-        setShowModal(false);
-    };
-
-    const handleGuardarCuenta = (nuevaCuenta) => {
-        // Asegurarnos de que el saldo sea número
-        const cuentaConSaldoNumerico = {
-            ...nuevaCuenta,
-            saldo: typeof nuevaCuenta.saldo === 'string' ? parseFloat(nuevaCuenta.saldo) : nuevaCuenta.saldo
-        };
-
-        setCuentas(prevCuentas => {
-            const cuentasActualizadas = [...prevCuentas, cuentaConSaldoNumerico];
-            // Guardar en sessionStorage dentro del callback de setCuentas
-            sessionStorage.setItem("cuentasUsuario", JSON.stringify(cuentasActualizadas));
-            return cuentasActualizadas;
-        });
-    };
-
     if (loading) {
         return (
             <Esquema>
                 <div className="flex justify-center items-center h-screen">
                     <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
-                </div>
-            </Esquema>
-        );
-    }
-
-    if (error) {
-        return (
-            <Esquema>
-                <div className="flex justify-center items-center h-screen">
-                    <CustomAlert title="Error" messages={error} />
                 </div>
             </Esquema>
         );
@@ -157,9 +158,11 @@ const Cuentas = () => {
                     </h1>
                 </div>
 
-                {/* Botón para mostrar el modal de establecer alerta de saldo */}
                 <div className="mb-6 max-w-md mx-auto w-full">
-                    <button onClick={() => { setTempMontoAlarma(montoAlarma); setShowModal(true); }} className="w-full bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-all duration-300 flex items-center justify-center gap-2">
+                    <button
+                        onClick={() => setShowModal(true)}
+                        className="w-full bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-all duration-300 flex items-center justify-center gap-2"
+                    >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path
                                 strokeLinecap="round"
@@ -172,10 +175,9 @@ const Cuentas = () => {
                     </button>
                 </div>
 
-                {/* Botón para abrir el modal de crear cuenta */}
                 <div className="mb-6 max-w-md mx-auto w-full">
                     <button
-                        onClick={() => setShowCreateModal(true)} // Abre el modal de Crear Cuenta
+                        onClick={() => setShowCreateModal(true)}
                         className="w-full bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-all duration-300 flex items-center justify-center gap-2"
                     >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -190,15 +192,25 @@ const Cuentas = () => {
                     </button>
                 </div>
 
+                <ModalAlerta
+                    isOpen={showModal}
+                    onClose={() => {
+                        setShowModal(false);
+                        setErroresAlarma('');
+                        setTempMontoAlarma(montoAlarma);
+                    }}
+                    onGuardar={handleGuardarAlarma}
+                    montoAlarma={tempMontoAlarma}
+                    onChange={handleTempMontoAlarmaChange}
+                    errores={erroresAlarma}
+                />
+
                 <CrearCuenta
                     isOpen={showCreateModal}
                     onClose={() => setShowCreateModal(false)}
                     onGuardarCuenta={handleGuardarCuenta}
                 />
 
-                <ModalAlerta errores={errorAlarma} isOpen={showModal} onClose={() => setShowModal(false)} onGuardar={handleGuardarAlarma} montoAlarma={tempMontoAlarma} onChange={handleTempMontoAlarmaChange} />
-
-                {/* Alertas */}
                 {showNotification && (
                     <CustomAlert
                         title="¡Atención! Cuentas con saldo bajo"
@@ -209,7 +221,6 @@ const Cuentas = () => {
                     />
                 )}
 
-                {/* Grid de cuentas */}
                 <div className="flex flex-row flex-wrap gap-4">
                     {cuentas.map((cuenta) => (
                         <div key={cuenta.cuenta_id} className={`card ${montoAlarma && Number(cuenta.saldo) < Number(montoAlarma) ? 'border-2 border-red-500' : ''}`}>
@@ -238,7 +249,6 @@ const Cuentas = () => {
                                         ${formatearNumero(cuenta.saldo)}
                                     </p>
                                 </div>
-
                             </div>
                             <div className="buttons flex flex-wrap items-center justify-center gap-4 mt-4">
                                 <button className="button-editar">
@@ -253,7 +263,7 @@ const Cuentas = () => {
                 </div>
             </div>
         </Esquema>
-    )
-}
+    );
+};
 
 export default Cuentas;

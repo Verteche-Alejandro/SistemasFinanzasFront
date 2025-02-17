@@ -25,6 +25,7 @@ const CrearCuenta = ({ isOpen, onClose, onGuardarCuenta }) => {
     const resetFormulario = () => {
         setNewCuenta(estadoInicial);
         setErrores({});
+        setSuccess(false);
     };
 
     useEffect(() => {
@@ -34,19 +35,85 @@ const CrearCuenta = ({ isOpen, onClose, onGuardarCuenta }) => {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
 
-        // Limpiamos el error cuando el usuario empieza a escribir
-        setErrores(prevErrores => ({ ...prevErrores, [name]: "" }));
+        // Limpiamos todos los errores relacionados
+        setErrores(prevErrores => ({ ...prevErrores, [name]: "", api: "" }));
 
         setNewCuenta(prev => {
-            if (name === "saldo") {
-                const saldoNumerico = parseFloat(value);
-                if (isNaN(saldoNumerico) || saldoNumerico < 0) {
-                    setErrores(prevErrores => ({ ...prevErrores, saldo: "El saldo debe ser un número válido y mayor o igual a 0" }));
+            // Validación del alias
+            if (name === "alias") {
+                // Verificar si el alias ya existe en las cuentas del usuario
+                const cuentasUsuario = JSON.parse(sessionStorage.getItem("cuentasUsuario") || "[]");
+                const aliasExistente = cuentasUsuario.some(cuenta =>
+                    cuenta.alias.toLowerCase() === value.toLowerCase() &&
+                    cuenta.cuenta_id !== newCuenta.cuenta_id
+                );
+
+                if (aliasExistente) {
+                    setErrores(prevErrores => ({
+                        ...prevErrores,
+                        alias: "Ya tienes una cuenta con este nombre"
+                    }));
                     return prev;
                 }
-                return { ...prev, saldo: saldoNumerico };
+
+                // Rechazar si contiene números
+                if (/\d/.test(value)) {
+                    setErrores(prevErrores => ({
+                        ...prevErrores,
+                        alias: "El alias no puede contener números"
+                    }));
+                    return prev;
+                }
+
+                // Permitir solo letras, espacios y algunos caracteres especiales
+                if (value && !/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s'-]*$/.test(value)) {
+                    setErrores(prevErrores => ({
+                        ...prevErrores,
+                        alias: "El alias solo puede contener letras y espacios"
+                    }));
+                    return prev;
+                }
+
+                return { ...prev, alias: value };
             }
 
+            // Validación del saldo
+            if (name === "saldo") {
+                // Permitir campo vacío para poder borrar
+                if (value === '') {
+                    return { ...prev, saldo: '' };
+                }
+
+                const saldoNumerico = parseFloat(value);
+                if (isNaN(saldoNumerico)) {
+                    setErrores(prevErrores => ({
+                        ...prevErrores,
+                        saldo: "El saldo debe ser un número válido"
+                    }));
+                    return prev;
+                }
+
+                if (saldoNumerico < 0) {
+                    setErrores(prevErrores => ({
+                        ...prevErrores,
+                        saldo: "El saldo no puede ser negativo"
+                    }));
+                    return prev;
+                }
+
+                // Validar que no exceda un límite razonable
+                if (saldoNumerico > 1000000000) {
+                    setErrores(prevErrores => ({
+                        ...prevErrores,
+                        saldo: "El saldo no puede superar 1.000.000.000"
+                    }));
+                    return prev;
+                }
+
+                return { ...prev, saldo: value };
+            }
+
+            // Manejo de la selección de moneda
             if (name === "moneda_id") {
                 return {
                     ...prev,
@@ -57,18 +124,65 @@ const CrearCuenta = ({ isOpen, onClose, onGuardarCuenta }) => {
                 };
             }
 
+            // Manejo del tipo de cuenta
+            if (name === "tipoDeCuenta") {
+                // Verificar límite de cuentas por tipo
+                const cuentasUsuario = JSON.parse(sessionStorage.getItem("cuentasUsuario") || "[]");
+                const cuentasDelMismoTipo = cuentasUsuario.filter(cuenta =>
+                    cuenta.tipoDeCuenta === value
+                ).length;
+
+                if (cuentasDelMismoTipo >= 2) {
+                    setErrores(prevErrores => ({
+                        ...prevErrores,
+                        tipoDeCuenta: `Ya tienes el máximo de cuentas ${value.toLowerCase()} permitidas`
+                    }));
+                    return prev;
+                }
+            }
+
             return { ...prev, [name]: value };
         });
     };
 
-
-
     const validarFormulario = () => {
         let nuevosErrores = {};
-        if (!newCuenta.alias.trim()) nuevosErrores.alias = "El alias de la cuenta es obligatorio";
-        if (!newCuenta.tipoDeCuenta) nuevosErrores.tipoDeCuenta = "Debe seleccionar un tipo de cuenta";
-        if (!newCuenta.moneda.moneda_id) nuevosErrores.moneda_id = "Debe seleccionar una moneda";
-        if (Number(newCuenta.saldo) <= 0) nuevosErrores.saldo = "El saldo inicial no puede ser negativo ni 0";
+
+        // Validación del alias
+        if (!newCuenta.alias.trim()) {
+            nuevosErrores.alias = "El alias de la cuenta es obligatorio";
+        } else if (newCuenta.alias.length < 3) {
+            nuevosErrores.alias = "El alias debe tener al menos 3 caracteres";
+        } else if (newCuenta.alias.length > 30) {
+            nuevosErrores.alias = "El alias no puede tener más de 30 caracteres";
+        }
+
+        // Validación del tipo de cuenta
+        if (!newCuenta.tipoDeCuenta) {
+            nuevosErrores.tipoDeCuenta = "Debe seleccionar un tipo de cuenta";
+        }
+
+        // Validación de la moneda
+        if (!newCuenta.moneda.moneda_id) {
+            nuevosErrores.moneda_id = "Debe seleccionar una moneda";
+        }
+
+        // Validación del saldo
+        if (newCuenta.saldo === '' || newCuenta.saldo === '0') {
+            nuevosErrores.saldo = "El saldo inicial debe ser mayor a 0";
+        } else {
+            const saldoNumerico = parseFloat(newCuenta.saldo);
+            if (isNaN(saldoNumerico) || saldoNumerico <= 0) {
+                nuevosErrores.saldo = "El saldo inicial debe ser mayor a 0";
+            }
+        }
+
+        // Validar límite total de cuentas
+        const cuentasUsuario = JSON.parse(sessionStorage.getItem("cuentasUsuario") || "[]");
+        if (cuentasUsuario.length >= 2) {
+            nuevosErrores.general = "Ya has alcanzado el límite máximo de 2 cuentas permitidas";
+        }
+
         return nuevosErrores;
     };
 
@@ -87,7 +201,7 @@ const CrearCuenta = ({ isOpen, onClose, onGuardarCuenta }) => {
         try {
             const cuentaData = {
                 ...newCuenta,
-                saldo: Number(newCuenta.saldo) || 0,
+                saldo: Number(newCuenta.saldo),
                 usuario: {
                     usuario_id: Number(newCuenta.usuario.usuario_id)
                 },
@@ -102,17 +216,15 @@ const CrearCuenta = ({ isOpen, onClose, onGuardarCuenta }) => {
                 setSuccess(true);
                 await actualizarCuentasEnSession();
 
-                setNewCuenta(estadoInicial);
-
                 setTimeout(() => {
                     onClose();
                     setSuccess(false);
                 }, 2000);
-            } else {
-                throw new Error("Error al crear la cuenta");
             }
         } catch (err) {
-            setErrores({ api: err.message || "Hubo un error al crear la cuenta" });
+            setErrores({
+                api: err.message || "Hubo un error al crear la cuenta"
+            });
         } finally {
             setLoading(false);
         }
@@ -140,9 +252,27 @@ const CrearCuenta = ({ isOpen, onClose, onGuardarCuenta }) => {
     return (
         <Modal isOpen={isOpen} onClose={onClose} title="Crear Nueva Cuenta" width="max-w-md" className="mx-4">
             <div className="space-y-4">
-                {errores.api && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">{errores.api}</div>}
-                {success && <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">Cuenta creada exitosamente</div>}
+                {/* Mensajes de error y éxito */}
+                {errores.api && (
+                    <div className={`border px-4 py-3 rounded ${errores.api.includes("límite de cuentas")
+                            ? "bg-yellow-100 border-yellow-400 text-yellow-700"
+                            : "bg-red-100 border-red-400 text-red-700"
+                        }`}>
+                        {errores.api}
+                    </div>
+                )}
+                {errores.general && (
+                    <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
+                        {errores.general}
+                    </div>
+                )}
+                {success && (
+                    <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+                        Cuenta creada exitosamente
+                    </div>
+                )}
 
+                {/* Formulario */}
                 <InputForm
                     label="Nombre de la cuenta"
                     type="text"
@@ -192,8 +322,18 @@ const CrearCuenta = ({ isOpen, onClose, onGuardarCuenta }) => {
                 {errores.saldo && <p className="text-red-500 text-sm">{errores.saldo}</p>}
 
                 <div className="flex justify-end gap-4 mt-6">
-                    <ButtonForm text="Cancelar" onClick={onClose} className="button-editar" />
-                    <ButtonForm text="Guardar Cuenta" onClick={handleGuardar} disabled={loading}>{loading ? "Creando..." : "Guardar Cuenta"}</ButtonForm>
+                    <ButtonForm
+                        text="Cancelar"
+                        onClick={onClose}
+                        className="button-editar"
+                    />
+                    <ButtonForm
+                        text="Guardar Cuenta"
+                        onClick={handleGuardar}
+                        disabled={loading || Object.keys(errores).length > 0}
+                    >
+                        {loading ? "Creando..." : "Guardar Cuenta"}
+                    </ButtonForm>
                 </div>
             </div>
         </Modal>
