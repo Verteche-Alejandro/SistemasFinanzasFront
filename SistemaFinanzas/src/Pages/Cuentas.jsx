@@ -3,6 +3,8 @@ import Esquema from "../Layouts/Esquema";
 import { getCuentasByUsuarioId } from "../Services/Controllers/Cuenta";
 import CustomAlert from "../Components/CustomAlert";
 import ModalAlerta from "../Layouts/ModalAlerta";
+import CrearCuenta from "../Layouts/CrearCuenta";
+import { deleteCuenta } from "../Services/Controllers/Cuenta";
 
 const Cuentas = () => {
     const [cuentas, setCuentas] = useState([]);
@@ -13,13 +15,29 @@ const Cuentas = () => {
     const [showNotification, setShowNotification] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [tempMontoAlarma, setTempMontoAlarma] = useState('');
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [erroresAlarma, setErroresAlarma] = useState('');
+
+    const eliminarCuenta = async (cuenta_id) => {
+        try {
+            const response = await deleteCuenta(cuenta_id);
+            if (!response) {
+                throw new Error("No se pudo eliminar la cuenta");
+            }
+
+            setCuentas((prevCuentas) => prevCuentas.filter((cuenta) => cuenta.cuenta_id !== cuenta_id));
+        } catch (error) {
+            console.error("Error:", error);
+            setError(error.message);
+        }
+    }
 
     useEffect(() => {
         const cargarCuentas = async () => {
             try {
                 const id = localStorage.getItem("usuario_id");
                 if (!id) {
-                    setError("No se encontro el id del usuario");
+                    setError("No se encontró el id del usuario");
                     setLoading(false);
                     return;
                 }
@@ -29,13 +47,17 @@ const Cuentas = () => {
 
                 if (!cuentasParseadas || !cuentasParseadas.length || cuentasParseadas[0]?.usuario_id !== id) {
                     const response = await getCuentasByUsuarioId(id);
-
                     if (!response) {
                         throw new Error("No se pudieron obtener las cuentas");
                     }
 
-                    sessionStorage.setItem("cuentasUsuario", JSON.stringify(response));
-                    setCuentas(response);
+                    const cuentasConSaldoNumerico = response.map(cuenta => ({
+                        ...cuenta,
+                        saldo: typeof cuenta.saldo === 'string' ? parseFloat(cuenta.saldo) : cuenta.saldo
+                    }));
+
+                    sessionStorage.setItem("cuentasUsuario", JSON.stringify(cuentasConSaldoNumerico));
+                    setCuentas(cuentasConSaldoNumerico);
                 } else {
                     setCuentas(cuentasParseadas);
                 }
@@ -43,6 +65,7 @@ const Cuentas = () => {
                 const montoAlarmaSession = sessionStorage.getItem(`montoAlarma_${id}`);
                 if (montoAlarmaSession) {
                     setMontoAlarma(montoAlarmaSession);
+                    setTempMontoAlarma(montoAlarmaSession);
                 }
 
             } catch (error) {
@@ -55,6 +78,62 @@ const Cuentas = () => {
 
         cargarCuentas();
     }, []);
+
+    const validarMontoAlarma = (monto) => {
+        if (!monto || monto.trim() === '') {
+            setErroresAlarma("El monto es obligatorio");
+            return false;
+        }
+
+        const montoNumerico = Number(monto);
+        if (isNaN(montoNumerico)) {
+            setErroresAlarma("El monto debe ser un número válido");
+            return false;
+        }
+
+        if (montoNumerico <= 0) {
+            setErroresAlarma("El monto debe ser mayor a 0");
+            return false;
+        }
+
+        if (montoNumerico > 1000000000) {
+            setErroresAlarma("El monto no puede ser mayor a 1.000.000.000");
+            return false;
+        }
+
+        setErroresAlarma('');
+        return true;
+    };
+
+    const handleTempMontoAlarmaChange = (e) => {
+        const valor = e.target.value;
+        setTempMontoAlarma(valor);
+
+        // Limpiar error al cambiar el valor
+        if (erroresAlarma) {
+            setErroresAlarma('');
+        }
+    };
+
+    const handleGuardarAlarma = () => {
+        if (!validarMontoAlarma(tempMontoAlarma)) {
+            return;
+        }
+
+        const id = localStorage.getItem("usuario_id");
+        sessionStorage.setItem(`montoAlarma_${id}`, tempMontoAlarma);
+        setMontoAlarma(tempMontoAlarma);
+        setShowModal(false);
+        setErroresAlarma('');
+    };
+
+    const handleGuardarCuenta = (nuevaCuenta) => {
+        setCuentas(prevCuentas => {
+            const cuentasActualizadas = [...prevCuentas, nuevaCuenta];
+            sessionStorage.setItem("cuentasUsuario", JSON.stringify(cuentasActualizadas));
+            return cuentasActualizadas;
+        });
+    };
 
     useEffect(() => {
         if (montoAlarma) {
@@ -69,22 +148,6 @@ const Cuentas = () => {
         }
     }, [cuentas, montoAlarma]);
 
-    const handleTempMontoAlarmaChange = (e) => {
-        const valor = e.target.value;
-        if (valor === '' || (!isNaN(valor) && valor >= 0)) {
-            setTempMontoAlarma(valor);
-        }
-    };
-
-    const handleGuardarAlarma = () => {
-        if (tempMontoAlarma) {
-            const id = localStorage.getItem("usuario_id");
-            sessionStorage.setItem(`montoAlarma_${id}`, tempMontoAlarma);
-            setMontoAlarma(tempMontoAlarma);
-            setShowModal(false);
-        }
-    };
-
     if (loading) {
         return (
             <Esquema>
@@ -95,14 +158,10 @@ const Cuentas = () => {
         );
     }
 
-    if (error) {
-        return (
-            <Esquema>
-                <div className="flex justify-center items-center h-screen">
-                    <CustomAlert title="Error" messages={error} />
-                </div>
-            </Esquema>
-        );
+    function formatearNumero(num) {
+        const numero = parseFloat(num);
+        if (isNaN(numero)) return '0.00';
+        return numero.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
     return (
@@ -114,13 +173,9 @@ const Cuentas = () => {
                     </h1>
                 </div>
 
-                {/* Botón para mostrar modal */}
                 <div className="mb-6 max-w-md mx-auto w-full">
                     <button
-                        onClick={() => {
-                            setTempMontoAlarma(montoAlarma);
-                            setShowModal(true);
-                        }}
+                        onClick={() => setShowModal(true)}
                         className="w-full bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-all duration-300 flex items-center justify-center gap-2"
                     >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -135,29 +190,55 @@ const Cuentas = () => {
                     </button>
                 </div>
 
+                <div className="mb-6 max-w-md mx-auto w-full">
+                    <button
+                        onClick={() => setShowCreateModal(true)}
+                        className="w-full bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-all duration-300 flex items-center justify-center gap-2"
+                    >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M12 4v16m8-8H4"
+                            />
+                        </svg>
+                        Crear Nueva Cuenta
+                    </button>
+                </div>
+
                 <ModalAlerta
                     isOpen={showModal}
-                    onClose={() => setShowModal(false)}
+                    onClose={() => {
+                        setShowModal(false);
+                        setErroresAlarma('');
+                        setTempMontoAlarma(montoAlarma);
+                    }}
                     onGuardar={handleGuardarAlarma}
                     montoAlarma={tempMontoAlarma}
                     onChange={handleTempMontoAlarmaChange}
+                    errores={erroresAlarma}
                 />
 
-                {/* Alertas */}
+                <CrearCuenta
+                    isOpen={showCreateModal}
+                    onClose={() => setShowCreateModal(false)}
+                    onGuardarCuenta={handleGuardarCuenta}
+                />
+
                 {showNotification && (
                     <CustomAlert
                         title="¡Atención! Cuentas con saldo bajo"
                         messages={alertas.map(cuenta =>
-                            `La cuenta ${cuenta.alias} tiene un saldo de $${cuenta.saldo.toLocaleString("es-ES")}, por debajo del límite establecido ($${Number(montoAlarma).toLocaleString("es-ES")})`
+                            `La cuenta ${cuenta.alias} tiene un saldo de $${Number(cuenta.saldo).toLocaleString("es-ES")}, por debajo del límite establecido ($${Number(montoAlarma).toLocaleString("es-ES")})`
                         )}
                         onClose={() => setShowNotification(false)}
                     />
                 )}
 
-                {/* Grid de cuentas */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                <div className="flex flex-row flex-wrap gap-4">
                     {cuentas.map((cuenta) => (
-                        <div key={cuenta.cuenta_id} className={`card ${montoAlarma && cuenta.saldo < Number(montoAlarma) ? 'border-2 border-red-500' : ''}`}>
+                        <div key={cuenta.cuenta_id} className={`card ${montoAlarma && Number(cuenta.saldo) < Number(montoAlarma) ? 'border-2 border-red-500' : ''}`}>
                             <div className="mb-5">
                                 <h1 className="card-title">
                                     Nombre de Cuenta
@@ -177,10 +258,10 @@ const Cuentas = () => {
                                         {cuenta.moneda?.nombre}
                                     </p>
                                 </div>
-                                <div className={`m-10 text-3xl text-center ${montoAlarma && cuenta.saldo < Number(montoAlarma) ? 'text-red-400' : 'text-green-300'}`}>
+                                <div className={`m-10 text-3xl text-center ${montoAlarma && Number(cuenta.saldo) < Number(montoAlarma) ? 'text-red-400' : 'text-green-300'}`}>
                                     <h3 className="font-bold">Saldo:</h3>
                                     <p>
-                                        ${cuenta.saldo.toLocaleString("es-ES")}
+                                        ${formatearNumero(cuenta.saldo)}
                                     </p>
                                 </div>
                             </div>
@@ -188,16 +269,16 @@ const Cuentas = () => {
                                 <button className="button-editar">
                                     Editar
                                 </button>
-                                <button className="button-editar">
+                                <button onClick={() => eliminarCuenta(cuenta.cuenta_id)} className="button-editar">
                                     Eliminar
                                 </button>
                             </div>
                         </div>
                     ))}
                 </div>
-
             </div>
         </Esquema>
-    )
-}
-export default Cuentas
+    );
+};
+
+export default Cuentas;

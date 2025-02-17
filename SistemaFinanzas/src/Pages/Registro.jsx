@@ -98,29 +98,31 @@ const RegistroUsuario = () => {
             };
 
             const rsp = await Registro(datosRegistro);
-            console.log("Respuesta del servidor:", rsp);
 
-            if (rsp?.message) {
-                alert("Usuario registrado correctamente,sera redirigido al login");
+            if (rsp?.message === "Usuario registrado exitosamente") {
+                alert("Usuario registrado correctamente, será redirigido al login");
                 navigate("/login");
-            } else {
-                setErrores(prev => ({
-                    ...prev,
-                    general: rsp?.error || "No se pudo registrar el usuario"
-                }));
             }
         } catch (error) {
-            console.error("Error en el registro:", error);
-            // Manejar diferentes tipos de errores
-            if (error.rsp?.data) {
+            console.log("Error en registro:", error);
+
+            const errorMessage = error.message;
+
+            // Manejar los diferentes tipos de errores
+            if (errorMessage.includes("usuario ya está en uso")) {
                 setErrores(prev => ({
                     ...prev,
-                    general: error.rsp.data
+                    usuario: "El nombre de usuario ya está en uso, por favor elija otro."
+                }));
+            } else if (errorMessage.includes("correo electrónico ya está registrado")) {
+                setErrores(prev => ({
+                    ...prev,
+                    email: "El correo electrónico ya está registrado, por favor elija otro."
                 }));
             } else {
                 setErrores(prev => ({
                     ...prev,
-                    general: "Error al intentar registrar el usuario"
+                    general: errorMessage || "Error al intentar registrar el usuario"
                 }));
             }
         }
