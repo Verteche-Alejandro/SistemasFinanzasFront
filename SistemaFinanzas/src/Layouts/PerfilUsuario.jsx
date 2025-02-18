@@ -311,18 +311,15 @@ const PerfilUsuario = ({ info }) => {
                     </div>
 
                     <div className="flex justify-between mt-4">
-                        <button
-                            className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500 transition-colors"
+                        <ButtonForm
+                            text="Cancelar"
+                            className="button-cancelar"
                             onClick={() => handleModalToggle('editando', false)}
-                        >
-                            Cancelar
-                        </button>
-                        <button
-                            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors"
+                        />
+                        <ButtonForm
+                            text="Guardar"
                             onClick={guardarCambios}
-                        >
-                            Guardar
-                        </button>
+                        />
                     </div>
                 </div>
             </Modal>
@@ -365,18 +362,15 @@ const PerfilUsuario = ({ info }) => {
                     </div>
 
                     <div className="flex justify-between mt-4">
-                        <button
-                            className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500 transition-colors"
+                        <ButtonForm
+                            text="Cancelar"
+                            className="button-cancelar"
                             onClick={() => handleModalToggle('cambiandoContraseña', false)}
-                        >
-                            Cancelar
-                        </button>
-                        <button
-                            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors"
+                        />
+                        <ButtonForm
+                            text="Guardar"
                             onClick={cambiarContraseña}
-                        >
-                            Guardar
-                        </button>
+                        />
                     </div>
                 </div>
             </Modal>

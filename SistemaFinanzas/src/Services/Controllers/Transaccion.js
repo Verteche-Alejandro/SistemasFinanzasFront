@@ -50,10 +50,25 @@ export const eliminarTransaccion = async (transac_id) => {
 
 export const buscarTransaccionPorAlias = async (alias) => {
     try {
-        let rsp = await POST(`/controller/transacciones/buscar-por-alias/`, alias);
-        return rsp || [];
-    } catch (error) {
-        console.error("Error en la solicitud POST(buscarTransaccionPorAlias) en transaccion:", error);
+        // Enviamos el alias en el formato correcto que espera el backend
+        const data = {
+            alias: alias
+        };
+
+        let rsp = await POST('/controller/transacciones/buscar-por-alias', data);
+
+        // Si la respuesta es exitosa, retornamos los datos
+        if (rsp) {
+            return rsp;
+        }
+
         return [];
+    } catch (error) {
+        console.error("Error en la búsqueda por alias:", error);
+        // Si el error es 404 (no encontrado), retornamos array vacío
+        if (error.status === 404) {
+            return [];
+        }
+        throw error;
     }
-}
+};

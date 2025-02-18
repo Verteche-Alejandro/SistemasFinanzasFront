@@ -5,6 +5,8 @@ import CustomAlert from "../Components/CustomAlert";
 import ModalAlerta from "../Layouts/ModalAlerta";
 import CrearCuenta from "../Layouts/CrearCuenta";
 import { deleteCuenta } from "../Services/Controllers/Cuenta";
+import ButtonForm from "../Components/Buttons/ButtonForm";
+import PlusIcon from "../Assets/Icons/PlusIcon";
 
 const Cuentas = () => {
     const [cuentas, setCuentas] = useState([]);
@@ -192,13 +194,15 @@ const Cuentas = () => {
                         </button>
                     </div>
 
-                    <div className="mb-6 max-w-md mx-auto w-full">
-                        <button
+                    <div className="mb-6 max-w-md mx-auto">
+                        <ButtonForm
+                            text="Nueva Cuenta"
                             onClick={() => setShowCreateModal(true)}
-                            className="w-full animated-button flex items-center justify-center gap-2">
-                            Crear Nueva Cuenta
-                        </button>
+                            className="w-full flex items-center justify-center gap-2"
+                            icono={<PlusIcon />}
+                        />
                     </div>
+
 
                     <ModalAlerta
                         isOpen={showModal}
@@ -263,7 +267,7 @@ const Cuentas = () => {
                                     <button className="button-cancelar">
                                         Editar
                                     </button>
-                                    <button onClick={() => eliminarCuenta(cuenta.cuenta_id)} className="button-cancelar">
+                                    <button onClick={() => eliminarCuenta(cuenta.cuenta_id)} className="button-eliminar">
                                         Eliminar
                                     </button>
                                 </div>

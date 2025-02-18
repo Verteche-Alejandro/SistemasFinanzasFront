@@ -1,28 +1,40 @@
-const Buscador = ({ onChange }) => {
+import { useState } from "react";
+
+const Buscador = ({ onSearch }) => {
+    const [inputValue, setInputValue] = useState("");
+
+    const handleInputChange = (e) => {
+        const value = e.target.value;
+        setInputValue(value);
+
+        // Si el usuario borra todo, recargar todas las transacciones automáticamente
+        if (value.trim() === "") {
+            onSearch("");
+        }
+    };
+
     return (
-        <form className="flex bg-zinc-800 border border-zinc-700 rounded-md shadow text-white text-sm">
-            <div aria-disabled="true" className="text-white w-10 grid place-content-center">
+        <div className="flex bg-zinc-800 border border-zinc-700 rounded-md shadow text-white text-sm">
+            <button
+                className="text-white w-10 grid place-content-center"
+                onClick={() => onSearch(inputValue)} // Ejecutar búsqueda solo al hacer clic
+            >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <circle cx="11" cy="11" r="8"></circle>
                     <path d="m21 21-4.3-4.3"></path>
                 </svg>
-            </div>
+            </button>
             <input
                 type="text"
                 spellCheck="false"
                 name="text"
-                className="bg-transparent py-1.5 outline-none placeholder:text-zinc-400 w-20 focus:w-48 transition-all"
-                placeholder="Buscar..."
-                onChange={onChange}
+                className="bg-transparent py-1.5 outline-none placeholder:text-zinc-400 w-40 "
+                placeholder="Buscar por alias"
+                value={inputValue}
+                onChange={handleInputChange}
             />
-            <button className="text-white w-10 grid place-content-center" aria-label="Clear input button" type="reset">
-                <svg strokeLinejoin="round" strokeLinecap="round" strokeWidth="2" stroke="currentColor" fill="none" viewBox="0 0 24 24" height="16" width="16" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M18 6 6 18"></path>
-                    <path d="m6 6 12 12"></path>
-                </svg>
-            </button>
-        </form>
+        </div>
     );
-}
+};
 
 export default Buscador;

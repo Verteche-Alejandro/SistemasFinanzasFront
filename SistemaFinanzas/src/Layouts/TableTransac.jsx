@@ -1,9 +1,8 @@
-import { useState, useEffect } from "react";
+import { eliminarTransaccion } from "../Services/Controllers/Transaccion";
 import Table from "../Components/Tables/Table";
-import { getTransaccionesByCuenta, eliminarTransaccion } from "../Services/Controllers/Transaccion";
+import DeleteIcon from "../Assets/Icons/DeleteIcon";
 
-const TableTransac = ({ cuentas }) => {
-    const [transacciones, setTransacciones] = useState([]);
+const TableTransac = ({ transacciones, onActualizarCuentas }) => {
     const headers = [
         "Fecha",
         "Monto",
@@ -13,37 +12,13 @@ const TableTransac = ({ cuentas }) => {
         "Acciones",
     ];
 
-    // Obtener las transacciones para todas las cuentas
-    useEffect(() => {
-        const fetchTransacciones = async () => {
-            try {
-                if (cuentas.length > 0) {
-                    const transaccionesEncontradas = cuentas.map((cuenta) =>
-                        getTransaccionesByCuenta(cuenta.cuenta_id)
-                    );
-
-                    const transaccionesArray = await Promise.all(transaccionesEncontradas);
-                    const transacciones = transaccionesArray.flat(); // Combina los resultados de todas las transacciones
-                    setTransacciones(transacciones);
-                } else {
-                    console.log("No hay cuentas para obtener transacciones");
-                }
-            } catch (error) {
-                console.error("Error en fetchTransacciones:", error);
-            }
-        };
-
-        fetchTransacciones();
-    }, [cuentas]); // Se ejecuta cuando cambian las cuentas
-
-    // Manejar la eliminación de una transacción
     const eliminar = async (transac_id) => {
         if (transac_id) {
             try {
                 await eliminarTransaccion(transac_id);
-                // Filtrar las transacciones para eliminar la transacción borrada
-                const nuevasTransacciones = transacciones.filter(transaccion => transaccion.transac_id !== transac_id);
-                setTransacciones(nuevasTransacciones);
+                if (onActualizarCuentas) {
+                    await onActualizarCuentas();
+                }
             } catch (error) {
                 console.error("Error al eliminar la transacción:", error);
             }
@@ -51,24 +26,35 @@ const TableTransac = ({ cuentas }) => {
     };
 
     function formatearNumero(num) {
-        return num.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        return num.toLocaleString('es-ES', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
     }
-
 
     return (
         <Table headers={headers}>
-            {transacciones.length > 0 ? (
+            {transacciones && transacciones.length > 0 ? (
                 transacciones.map((transaccion, index) => (
-                    <tr key={index}>
-                        <td>{new Date(transaccion.fecha).toLocaleDateString()}</td>
-                        <td>${formatearNumero(transaccion.monto)}</td>
-                        <td>{transaccion.tipo_transaccion}</td>
-                        <td>{transaccion.cuenta.alias}</td>
-                        <td>({transaccion.cuenta.moneda.simbolo}) {transaccion.cuenta.moneda.nombre}</td>
-                        <td className="p-2 flex flex-wrap justify-center space-x-2">
-                            <button
-                                className="rounded-lg bg-red-600 p-2 text-white"
-                                onClick={() => eliminar(transaccion.transac_id)}>
+                    <tr key={index} className="hover:bg-gray-50">
+                        <td className="px-4 py-2">
+                            {new Date(transaccion.fecha).toLocaleDateString()}
+                        </td>
+                        <td className="px-4 py-2">
+                            ${formatearNumero(transaccion.monto)}
+                        </td>
+                        <td className="px-4 py-2">
+                            {transaccion.tipo_transaccion}
+                        </td>
+                        <td className="px-4 py-2">
+                            {transaccion.cuenta.alias}
+                        </td>
+                        <td className="px-4 py-2">
+                            ({transaccion.cuenta.moneda.simbolo}) {transaccion.cuenta.moneda.nombre}
+                        </td>
+                        <td className="px-4 py-2 flex flex-wrap justify-center space-x-2">
+                            <button className="button-eliminar" onClick={() => eliminar(transaccion.transac_id)}>
+                                <DeleteIcon />
                                 Eliminar
                             </button>
                         </td>
@@ -76,7 +62,7 @@ const TableTransac = ({ cuentas }) => {
                 ))
             ) : (
                 <tr>
-                    <td colSpan={headers.length} className="text-center py-4">
+                    <td colSpan={headers.length} className="text-center py-4 text-gray-500">
                         Sin datos disponibles
                     </td>
                 </tr>
