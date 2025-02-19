@@ -1,9 +1,9 @@
-const Table = ({ headers, children, color }) => {
+const Table = ({ headers, children }) => {
     return (
-        <div className="lg:mt-0 select-none overflow-hidden rounded-3xl items-center shadow-2xl shadow-gray-900">
+        <div className="lg:mt-0 select-none overflow-hidden rounded-3xl items-center shadow-2xl bg-[#133039]">
             <div className="flex flex-row items-start justify-center w-full h-full">
                 <table className="w-full h-full bg-white">
-                    <thead className="bg-black text-white border-b-2 border-stone-300">
+                    <thead className="bg-gradient-to-b from-[#254954] to-[#133039] text-white">
                         <tr>
                             {headers.map((header, index) => (
                                 <th key={index} className="py-3 px-5 text-center">

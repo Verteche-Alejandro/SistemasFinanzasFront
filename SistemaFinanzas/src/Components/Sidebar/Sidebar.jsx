@@ -13,28 +13,42 @@ function Sidebar({ logo, links, isOpen, toggleSidebar }) {
     return (
         <div>
             {/* Overlay */}
-            <div className={`fixed inset-0 bg-black opacity-50 z-30 ${isOpen ? 'block' : 'hidden'}`} onClick={toggleSidebar} />
+            <div className={`fixed inset-0 bg-[#133039] opacity-30 z-30 ${isOpen ? 'block' : 'hidden'}`} onClick={toggleSidebar} />
             {/* Sidebar */}
-            <div className={`fixed h-full flex flex-col bg-gray-800 text-white w-64 transform transition-transform duration-300 inset-y-0 left-0 z-40 ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 md:static md:inset-0`}>
+            <div className={`fixed h-full flex flex-col bg-gradient-to-b from-[#254954] to-[#133039] 
+                           text-[#f0fbfb] w-64 transform transition-transform duration-300 
+                           inset-y-0 left-0 z-40 ${isOpen ? 'translate-x-0' : '-translate-x-full'} 
+                           md:translate-x-0 md:static md:inset-0`}>
                 {/* Logo */}
-                <div className="p-4 text-xl font-bold border-b border-gray-700">
-                    {logo}
+                <div className="p-6 text-xl font-bold border-b border-[#276a77] bg-[#133039]/30">
+                    <span className="bg-gradient-to-r from-[#49bdc7] to-[#83d7dd] text-transparent bg-clip-text">
+                        {logo}
+                    </span>
                 </div>
                 {/* Links */}
-                <nav className="flex-1 p-4 space-y-4">
+                <nav className="flex-1 p-4 space-y-2">
                     {links.map((link, index) => (
                         <a
                             key={index}
                             href={link.path}
-                            className="block py-2 px-4 rounded hover:bg-gray-700">
+                            className="block py-3 px-4 rounded-lg transition-all duration-200
+                                     hover:bg-[#276a77]/30 hover:text-[#83d7dd]
+                                     focus:bg-[#276a77]/50 focus:text-[#b5e8ec]
+                                     active:bg-[#276a77]">
                             {link.text}
                         </a>
                     ))}
                 </nav>
-                <p className="border-b border-gray-700" ></p>
+                <div className="border-b border-[#276a77]"></div>
                 {/* Footer */}
-                <div className="flex justify-center p-4">
-                    <button onClick={cerrarSesion} className="block text-sm text-gray-400 hover:underline">
+                <div className="p-6">
+                    <button
+                        onClick={cerrarSesion}
+                        className="w-full py-2 px-4 rounded-lg text-[#b5e8ec] 
+                                 transition-all duration-200
+                                 hover:bg-[#254954] hover:text-[#d8f4f5]
+                                 active:bg-[#133039]
+                                 text-sm text-center">
                         Cerrar sesión
                     </button>
                 </div>

@@ -255,8 +255,8 @@ const CrearCuenta = ({ isOpen, onClose, onGuardarCuenta }) => {
                 {/* Mensajes de error y éxito */}
                 {errores.api && (
                     <div className={`border px-4 py-3 rounded ${errores.api.includes("límite de cuentas")
-                            ? "bg-yellow-100 border-yellow-400 text-yellow-700"
-                            : "bg-red-100 border-red-400 text-red-700"
+                        ? "bg-yellow-100 border-yellow-400 text-yellow-700"
+                        : "bg-red-100 border-red-400 text-red-700"
                         }`}>
                         {errores.api}
                     </div>

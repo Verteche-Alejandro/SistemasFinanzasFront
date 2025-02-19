@@ -98,17 +98,19 @@ const Transacciones = () => {
     return (
         <Esquema>
             <div className="p-6">
-                <h1 className="text-4xl font-bold text-gray-800 mb-2">Gestionar Transacciones</h1>
+                <h1 className="bg-gradient-to-r from-[#49bdc7] to-[#83d7dd] text-transparent bg-clip-text text-4xl mb-2">Gestionar Transacciones</h1>
                 <p className="text-gray-500 mb-6">Registra y gestiona tus movimientos</p>
 
                 {/* Filtros y botones */}
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
-                    <ButtonForm
-                        text="Nueva Transacción"
-                        className="animated-button"
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 ">
+                    <button
                         onClick={() => setOpenModal(true)}
-                        icono={<PlusIcon/>}
-                    />
+                        className="flex text-white items-center rounded-lg p-2 max-w-xs bg-[#2da0ad] hover:bg-[#288292] 
+                                     transform hover:scale-105 transition-all duration-200 mb-4"
+                    >
+                        <PlusIcon />
+                        <span className="font-semibold ml-2">Nueva Transaccion</span>
+                    </button>
                     <div className="flex flex-wrap gap-4 justify-between w-full sm:w-auto">
                         <Buscador onSearch={buscar} className="w-full sm:w-60" />
                         <select

@@ -230,7 +230,7 @@ h1{
   height: 170px;
   position: absolute;
   content: "";
-  background-color: white;
+  background-color: var(--hover-bg-color, white);
   border-radius: 50%;
   left: -100%;
   top: 0;

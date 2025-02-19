@@ -25,7 +25,7 @@ const Perfil = () => {
         <>
             <Esquema>
                 <div className="flex items-center justify-between">
-                    <h1 className="text-3xl font-semibold text-gray-800">Perfil de Usuario</h1>
+                    <h1 className="bg-gradient-to-r from-[#49bdc7] to-[#83d7dd] text-transparent bg-clip-text text-4xl">Perfil de Usuario</h1>
                 </div>
                 <PerfilUsuario info={usuario} />
             </Esquema>

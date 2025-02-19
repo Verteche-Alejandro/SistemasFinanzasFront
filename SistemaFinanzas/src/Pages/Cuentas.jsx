@@ -172,7 +172,7 @@ const Cuentas = () => {
             <div className="h-screen overflow-auto">
                 <div className="flex flex-col p-6 justify-center">
                     <div className="flex justify-center items-center mb-8">
-                        <h1 className="text-4xl font-semibold text-gray-800">
+                        <h1 className="bg-gradient-to-r from-[#49bdc7] to-[#83d7dd] text-transparent bg-clip-text text-4xl">
                             Mis Cuentas
                         </h1>
                     </div>
@@ -195,12 +195,14 @@ const Cuentas = () => {
                     </div>
 
                     <div className="mb-6 max-w-md mx-auto">
-                        <ButtonForm
+                        <button
                             text="Nueva Cuenta"
                             onClick={() => setShowCreateModal(true)}
-                            className="w-full flex items-center justify-center gap-2"
-                            icono={<PlusIcon />}
-                        />
+                            className="flex text-white items-center rounded-lg p-2 max-w-xs bg-[#2da0ad] hover:bg-[#288292] 
+                                     transform hover:scale-105 transition-all duration-200 mb-4">
+                            <PlusIcon />
+                            <span className="font-semibold ml-2">Nueva Cuenta</span>
+                        </button>
                     </div>
 
 

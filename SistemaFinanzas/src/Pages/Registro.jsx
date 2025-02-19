@@ -4,6 +4,7 @@ import ButtonForm from "../Components/Buttons/ButtonForm";
 import { Registro } from "../Services/Auth";
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import BackIcon from "../Assets/Icons/BackIcon";
 
 const RegistroUsuario = () => {
     const [data, setData] = useState({ usuario: "", email: "", confirmarEmail: "", clave: "", confirmarClave: "" });
@@ -139,84 +140,119 @@ const RegistroUsuario = () => {
         }
     }, [errores]);
 
+    const handleOnClick = (ruta) => {
+        if (!ruta) return;
+        navigate(ruta);
+    }
+
     return (
-        <div className="flex items-center justify-center rounded-lg p-4 h-[90vh] w-[30vw] mx-auto inset-0 bg-white bg-opacity-40 backdrop-blur-3xl shadow-2xl">
-            <div className="w-[20vw]">
-                <h1>Registro de nuevo usuario</h1>
-                <Form onSubmit={(e) => e.preventDefault()}>
+        <div className="flex items-center justify-center rounded-xl p-6 h-[90vh] w-[55vw] mx-auto inset-0 
+                        bg-gradient-to-br from-[#f0fbfb] to-[#d8f4f5] bg-opacity-40 backdrop-blur-3xl 
+                        shadow-2xl border border-white/20">
+            <div className="w-[50vw]">
+                <h1 className="text-3xl font-bold mb-8 text-center 
+                               bg-clip-text text-transparent bg-gradient-to-r from-[#2da0ad] to-[#49bdc7]">
+                    Registro de Usuario
+                </h1>
+                <Form onSubmit={(e) => e.preventDefault()} className="px-4">
                     {errores.general && (
-                        <p className="text-red-600 mb-4">{errores.general}</p>
+                        <p className="text-red-600 mb-6 text-center bg-[#f0fbfb] py-2 px-4 rounded-lg">
+                            {errores.general}
+                        </p>
                     )}
 
-                    <div className="mb-4">
-                        <InputForm
-                            onChange={(e) => handleInputChange("usuario", e.target.value)}
-                            type="text"
-                            label="Nombre"
-                            placeHolder="Ingrese un nombre de usuario"
-                            value={data.usuario}
-                        />
-                        {errores.usuario && (
-                            <p className="text-red-600 text-sm mt-1">{errores.usuario}</p>
-                        )}
+                    <div className="grid grid-cols-2 gap-8">
+                        {/* Primera columna */}
+                        <div className="space-y-6">
+                            <div>
+                                <InputForm
+                                    onChange={(e) => handleInputChange("usuario", e.target.value)}
+                                    type="text"
+                                    label="Nombre"
+                                    placeHolder="Ingrese un nombre de usuario"
+                                    value={data.usuario}
+                                />
+                                {errores.usuario && (
+                                    <p className="text-red-600 text-sm mt-1">{errores.usuario}</p>
+                                )}
+                            </div>
+
+                            <div>
+                                <InputForm
+                                    onChange={(e) => handleInputChange("email", e.target.value)}
+                                    type="email"
+                                    label="Correo"
+                                    placeHolder="Ingrese un correo electrónico"
+                                    value={data.email}
+                                />
+                                {errores.email && (
+                                    <p className="text-red-600 text-sm mt-1">{errores.email}</p>
+                                )}
+                            </div>
+
+                            <div>
+                                <InputForm
+                                    onChange={(e) => handleInputChange("clave", e.target.value)}
+                                    type="password"
+                                    label="Contraseña"
+                                    placeHolder="Ingrese una contraseña"
+                                    value={data.clave}
+                                />
+                                {errores.clave && (
+                                    <p className="text-red-600 text-sm mt-1">{errores.clave}</p>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Segunda columna */}
+                        <div className="space-y-6">
+                            <div>
+                                <InputForm
+                                    onChange={(e) => handleInputChange("confirmarEmail", e.target.value)}
+                                    type="email"
+                                    label="Confirmar Correo"
+                                    placeHolder="Repetir correo electrónico"
+                                    value={data.confirmarEmail}
+                                />
+                                {errores.confirmarEmail && (
+                                    <p className="text-red-600 text-sm mt-1">{errores.confirmarEmail}</p>
+                                )}
+                            </div>
+
+                            <div>
+                                <InputForm
+                                    onChange={(e) => handleInputChange("confirmarClave", e.target.value)}
+                                    type="password"
+                                    label="Confirmar Contraseña"
+                                    placeHolder="Repetir contraseña"
+                                    value={data.confirmarClave}
+                                />
+                                {errores.confirmarClave && (
+                                    <p className="text-red-600 text-sm mt-1">{errores.confirmarClave}</p>
+                                )}
+                            </div>
+                        </div>
                     </div>
 
-                    <div className="mb-4">
-                        <InputForm
-                            onChange={(e) => handleInputChange("email", e.target.value)}
-                            type="email"
-                            label="Correo"
-                            placeHolder="Ingrese un correo electrónico"
-                            value={data.email}
-                        />
-                        {errores.email && (
-                            <p className="text-red-600 text-sm mt-1">{errores.email}</p>
-                        )}
-                    </div>
-
-                    <div className="mb-4">
-                        <InputForm
-                            onChange={(e) => handleInputChange("confirmarEmail", e.target.value)}
-                            type="email"
-                            label="Confirmar Correo"
-                            placeHolder="Repetir correo electrónico"
-                            value={data.confirmarEmail}
-                        />
-                        {errores.confirmarEmail && (
-                            <p className="text-red-600 text-sm mt-1">{errores.confirmarEmail}</p>
-                        )}
-                    </div>
-
-                    <div className="mb-4">
-                        <InputForm
-                            onChange={(e) => handleInputChange("clave", e.target.value)}
-                            type="password"
-                            label="Contraseña"
-                            placeHolder="Ingrese una contraseña"
-                            value={data.clave}
-                        />
-                        {errores.clave && (
-                            <p className="text-red-600 text-sm mt-1">{errores.clave}</p>
-                        )}
-                    </div>
-
-                    <div className="mb-4">
-                        <InputForm
-                            onChange={(e) => handleInputChange("confirmarClave", e.target.value)}
-                            type="password"
-                            label="Confirmar Contraseña"
-                            placeHolder="Repetir contraseña"
-                            value={data.confirmarClave}
-                        />
-                        {errores.confirmarClave && (
-                            <p className="text-red-600 text-sm mt-1">{errores.confirmarClave}</p>
-                        )}
-                    </div>
-
-                    <div>
-                        <ButtonForm text={"Registrarse"} onClick={Registrar}>
+                    {/* Botones */}
+                    <div className="mt-10 flex flex-col items-center space-y-5">
+                        <ButtonForm
+                            text={"Registrarse"}
+                            onClick={Registrar}
+                            className="w-full max-w-xs bg-[#2da0ad] hover:bg-[#288292] 
+                                     transform hover:scale-105 transition-all duration-200"
+                        >
                             Registrarse
                         </ButtonForm>
+                        <button
+                            onClick={() => handleOnClick("/login")}
+                            className="flex items-center gap-3 text-[#276a77] hover:text-[#133039] 
+                                       transition-all duration-200 ease-in-out py-2 px-4 rounded-lg
+                                       hover:bg-[#f0fbfb]"
+                        >
+                            <BackIcon />
+                            <span className="font-semibold">Volver</span>
+                        </button>
                     </div>
                 </Form>
             </div>
