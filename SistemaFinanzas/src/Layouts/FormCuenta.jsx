@@ -74,34 +74,31 @@ const FormCuenta = ({ cuenta, onSubmit, onCancel, loading, submitButtonText = "G
             }
 
             if (name === "saldo") {
-                if (value === '') return { ...prev, saldo: '' };
+                console.log("Saldo ingresado:", value); // Verifica el valor ingresado
+
+                if (value === '') return { ...prev, saldo: '' }; // Permitir borrar el campo
 
                 const saldoNumerico = parseFloat(value);
                 if (isNaN(saldoNumerico)) {
-                    setErrores(prevErrores => ({
-                        ...prevErrores,
-                        saldo: "El saldo debe ser un número válido"
-                    }));
-                    return prev;
+                    console.log("Error: El saldo no es un número válido");
+                    return { ...prev, saldo: value }; // Permitir escribir aunque sea incorrecto
                 }
 
-                if (saldoNumerico < 5000) {  // Cambiado de 0 a 5000
+                if (saldoNumerico < 5000) {
+                    console.log("Error: El saldo es menor a 5000");
                     setErrores(prevErrores => ({
                         ...prevErrores,
                         saldo: "El saldo no puede ser menor a 5.000"
                     }));
-                    return prev;
-                }
-
-                if (saldoNumerico > 1000000000) {
+                } else if (saldoNumerico > 1000000000) {
+                    console.log("Error: El saldo supera el límite de 1.000.000.000");
                     setErrores(prevErrores => ({
                         ...prevErrores,
                         saldo: "El saldo no puede superar 1.000.000.000"
                     }));
-                    return prev;
                 }
 
-                return { ...prev, saldo: value };
+                return { ...prev, saldo: value }; // Siempre actualizar saldo
             }
 
             if (name === "moneda_id") {
@@ -185,8 +182,13 @@ const FormCuenta = ({ cuenta, onSubmit, onCancel, loading, submitButtonText = "G
                 moneda_id: Number(formData.moneda.moneda_id)
             }
         };
-
-        onSubmit(cuentaData);
+        try {
+            await onSubmit(cuentaData);
+            setSuccess(true);
+            setTimeout(() => setSuccess(false), 2000);
+        } catch (error) {
+            setErrores(prevErrores => ({ ...prevErrores, api: "Error al guardar la cuenta" }));
+        }
     };
 
     return (
@@ -206,7 +208,7 @@ const FormCuenta = ({ cuenta, onSubmit, onCancel, loading, submitButtonText = "G
             )}
             {success && (
                 <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-                    Operación exitosa
+                    Cuenta creada correctamente
                 </div>
             )}
 
@@ -220,18 +222,6 @@ const FormCuenta = ({ cuenta, onSubmit, onCancel, loading, submitButtonText = "G
             />
             {errores.alias && <p className="text-red-500 text-sm">{errores.alias}</p>}
 
-            {/*<label className="block text-gray-700 mb-2">Tipo de Cuenta</label>
-            <select
-                name="tipoDeCuenta"
-                value={formData.tipoDeCuenta}
-                onChange={handleInputChange}
-                disabled={isEditing ? false : !!cuenta} // Modificado
-                className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-                <option value="" selected disabled>Selecciona un tipo de cuenta</option>
-                <option value="Ahorro">Ahorro</option>
-                <option value="Corriente">Corriente</option>
-            </select>*/}
             <div className="flex flex-col m-5">
                 <SelectForm
                     label="Tipo de cuenta"
