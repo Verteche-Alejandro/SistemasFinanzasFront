@@ -227,16 +227,17 @@ const NuevaTransac = ({ isOpen, onClose, cuentas, onActualizarCuentas }) => {
                 />
                 {errores.fecha && <p className="text-red-500 text-sm">{errores.fecha}</p>}
 
-                <div className="flex justify-between space-x-4">
+                <div className="flex justify-end space-x-4">
                     <ButtonForm
                         text="Cancelar"
                         type="button"
                         onClick={onClose}
-                        className="button-cancelar"
+                        className="bg-white text-red-600 border-red-600 hover:bg-red-600 hover:text-white hover:border-white"
                     />
                     <ButtonForm
-                        text="Registrar Transacción"
-                        type="button"
+                        text="Guardar"
+                        className="bg-white text-[#2da0ad] border-2 border-[#2da0ad] hover:bg-[#2da0ad] hover:text-white hover:border-white transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-md"
+                        onClick={Registrar}
                     />
                 </div>
             </form>

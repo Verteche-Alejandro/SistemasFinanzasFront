@@ -4,6 +4,8 @@ import Modal from "../Components/Modals/Modal";
 import InputForm from "../Components/Inputs/InputForm";
 import ButtonForm from "../Components/Buttons/ButtonForm";
 import userImg from "../Assets/Img/user.png";
+import PencilIcon from "../Assets/Icons/PencilIcon";
+import KeyIcon from "../Assets/Icons/KeyIcon";
 
 const PerfilUsuario = ({ info }) => {
     const [usuario, setUsuario] = useState({
@@ -246,15 +248,20 @@ const PerfilUsuario = ({ info }) => {
 
                 <div className="flex gap-4 mt-4">
                     <ButtonForm
-                        className="animated-button"
-                        text="Editar Perfil"
+                        text="Editar perfil"
                         onClick={() => handleModalToggle('editando', true)}
-                    />
+                        className="flex text-white items-center rounded-lg p-2 max-w-xs bg-[#2da0ad] hover:bg-[#288292]
+                        transform hover:scale-105 transition-all duration-200"
+                        icono={<PencilIcon />}>
+                    </ButtonForm>
+
                     <ButtonForm
-                        className="animated-button"
-                        text="Cambiar Contraseña"
+                        text="Cambiar contraseña"
                         onClick={() => handleModalToggle('cambiandoContraseña', true)}
-                    />
+                        className="flex text-white items-center rounded-lg p-2 max-w-xs bg-[#2da0ad] hover:bg-[#288292] 
+                                     transform hover:scale-105 transition-all duration-200"
+                        icono={<KeyIcon />}>
+                    </ButtonForm>
                 </div>
             </div>
 
@@ -286,38 +293,35 @@ const PerfilUsuario = ({ info }) => {
                     )}
                     {success && (<p className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">Informacion actualizada exitosamente</p>)}
 
-                    <div>
-                        <InputForm
-                            type="text"
-                            label="Nuevo Nombre"
-                            onChange={(e) => handleInputChange('nuevoNombre', e.target.value)}
-                            placeholder="Nuevo nombre"
-                        />
-                        {errores.nuevoNombre && (
-                            <p className="text-red-600 text-sm mt-1">{errores.nuevoNombre}</p>
-                        )}
-                    </div>
+                    <InputForm
+                        type="text"
+                        label="Nuevo Nombre"
+                        onChange={(e) => handleInputChange('nuevoNombre', e.target.value)}
+                        placeholder="Nuevo nombre"
+                    />
+                    {errores.nuevoNombre && (
+                        <p className="text-red-600 text-sm mt-1">{errores.nuevoNombre}</p>
+                    )}
 
-                    <div>
-                        <InputForm
-                            type="email"
-                            label="Nuevo Correo"
-                            onChange={(e) => handleInputChange('nuevoCorreo', e.target.value)}
-                            placeholder="Nuevo correo"
-                        />
-                        {errores.nuevoCorreo && (
-                            <p className="text-red-600 text-sm mt-1">{errores.nuevoCorreo}</p>
-                        )}
-                    </div>
+                    <InputForm
+                        type="email"
+                        label="Nuevo Correo"
+                        onChange={(e) => handleInputChange('nuevoCorreo', e.target.value)}
+                        placeholder="Nuevo correo"
+                    />
+                    {errores.nuevoCorreo && (
+                        <p className="text-red-600 text-sm mt-1">{errores.nuevoCorreo}</p>
+                    )}
 
-                    <div className="flex justify-between mt-4">
+                    <div className="flex justify-end space-x-4 mt-4">
                         <ButtonForm
                             text="Cancelar"
-                            className="button-cancelar"
+                            className="bg-white text-red-600 border-red-600 hover:bg-red-600 hover:text-white hover:border-white"
                             onClick={() => handleModalToggle('editando', false)}
                         />
                         <ButtonForm
                             text="Guardar"
+                            className="bg-white text-[#2da0ad] border-2 border-[#2da0ad] hover:bg-[#2da0ad] hover:text-white hover:border-white transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-md"
                             onClick={guardarCambios}
                         />
                     </div>
@@ -335,46 +339,43 @@ const PerfilUsuario = ({ info }) => {
                         <p className="text-red-600 text-sm">{errores.general}</p>
                     )}
 
-                    <div>
-                        <InputForm
-                            type="password"
-                            label="Nueva Contraseña"
-                            value={formData.nuevaContraseña}
-                            onChange={(e) => handleInputChange('nuevaContraseña', e.target.value)}
-                            placeholder="Nueva contraseña"
-                        />
-                        {errores.nuevaContraseña && (
-                            <p className="text-red-600 text-sm mt-1">{errores.nuevaContraseña}</p>
-                        )}
-                    </div>
+                    <InputForm
+                        type="password"
+                        label="Nueva Contraseña"
+                        value={formData.nuevaContraseña}
+                        onChange={(e) => handleInputChange('nuevaContraseña', e.target.value)}
+                        placeholder="Nueva contraseña"
+                    />
+                    {errores.nuevaContraseña && (
+                        <p className="text-red-600 text-sm mt-1">{errores.nuevaContraseña}</p>
+                    )}
 
-                    <div>
-                        <InputForm
-                            type="password"
-                            label="Confirmar Contraseña"
-                            value={formData.confirmarContraseña}
-                            onChange={(e) => handleInputChange('confirmarContraseña', e.target.value)}
-                            placeholder="Confirmar nueva contraseña"
-                        />
-                        {errores.confirmarContraseña && (
-                            <p className="text-red-600 text-sm mt-1">{errores.confirmarContraseña}</p>
-                        )}
-                    </div>
+                    <InputForm
+                        type="password"
+                        label="Confirmar Contraseña"
+                        value={formData.confirmarContraseña}
+                        onChange={(e) => handleInputChange('confirmarContraseña', e.target.value)}
+                        placeholder="Confirmar nueva contraseña"
+                    />
+                    {errores.confirmarContraseña && (
+                        <p className="text-red-600 text-sm mt-1">{errores.confirmarContraseña}</p>
+                    )}
 
-                    <div className="flex justify-between mt-4">
+                    <div className="flex justify-end space-x-4 mt-4">
                         <ButtonForm
                             text="Cancelar"
-                            className="button-cancelar"
+                            className="bg-white text-red-600 border-red-600 hover:bg-red-600 hover:text-white hover:border-white"
                             onClick={() => handleModalToggle('cambiandoContraseña', false)}
                         />
                         <ButtonForm
                             text="Guardar"
+                            className="bg-white text-[#2da0ad] border-2 border-[#2da0ad] hover:bg-[#2da0ad] hover:text-white hover:border-white transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-md"
                             onClick={cambiarContraseña}
                         />
                     </div>
                 </div>
-            </Modal>
-        </div>
+            </Modal >
+        </div >
     );
 };
 

@@ -240,16 +240,14 @@ const RegistroUsuario = () => {
                             text={"Registrarse"}
                             onClick={Registrar}
                             className="w-full max-w-xs bg-[#2da0ad] hover:bg-[#288292] 
-                                     transform hover:scale-105 transition-all duration-200"
+                                     transform hover:scale-105 transition-all duration-200 text-white"
                         >
                             Registrarse
                         </ButtonForm>
                         <button
                             onClick={() => handleOnClick("/login")}
                             className="flex items-center gap-3 text-[#276a77] hover:text-[#133039] 
-                                       transition-all duration-200 ease-in-out py-2 px-4 rounded-lg
-                                       hover:bg-[#f0fbfb]"
-                        >
+                                       transition-all duration-200 ease-in-out py-2 px-4 rounded-lg">
                             <BackIcon />
                             <span className="font-semibold">Volver</span>
                         </button>

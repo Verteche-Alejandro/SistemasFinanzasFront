@@ -1,6 +1,7 @@
 import { eliminarTransaccion } from "../Services/Controllers/Transaccion";
 import Table from "../Components/Tables/Table";
 import DeleteIcon from "../Assets/Icons/DeleteIcon";
+import ButtonForm from "../Components/Buttons/ButtonForm";
 
 const TableTransac = ({ transacciones, onActualizarCuentas }) => {
     const headers = [
@@ -53,10 +54,11 @@ const TableTransac = ({ transacciones, onActualizarCuentas }) => {
                             ({transaccion.cuenta.moneda.simbolo}) {transaccion.cuenta.moneda.nombre}
                         </td>
                         <td className="px-4 py-2 flex flex-wrap justify-center space-x-2">
-                            <button className="button-eliminar" onClick={() => eliminar(transaccion.transac_id)}>
-                                <DeleteIcon />
-                                Eliminar
-                            </button>
+                            <ButtonForm className="bg-white text-red-600 border-red-600 hover:bg-red-600 hover:text-white hover:border-white"
+                                onClick={() => eliminar(transaccion.transac_id)}
+                                text="Eliminar"
+                                icono={<DeleteIcon />}>
+                            </ButtonForm>
                         </td>
                     </tr>
                 ))

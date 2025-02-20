@@ -1,5 +1,5 @@
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useNavigate } from "react-router-dom"
+import BackIcon from "../../Assets/Icons/BackIcon"
 
 function Sidebar({ logo, links, isOpen, toggleSidebar }) {
     const navigate = useNavigate();
@@ -32,13 +32,17 @@ function Sidebar({ logo, links, isOpen, toggleSidebar }) {
                             key={index}
                             href={link.path}
                             className="block py-3 px-4 rounded-lg transition-all duration-200
-                                     hover:bg-[#276a77]/30 hover:text-[#83d7dd]
-                                     focus:bg-[#276a77]/50 focus:text-[#b5e8ec]
-                                     active:bg-[#276a77]">
-                            {link.text}
+                                        hover:bg-[#276a77]/30 hover:text-[#83d7dd]
+                                        focus:bg-[#276a77]/50 focus:text-[#b5e8ec]
+                                        active:bg-[#276a77]">
+                            <div className="flex flex-row items-center justify-center gap-2"> {/* Aquí se agrega un flex para alinear el ícono y el texto */}
+                                {link.icono}  {/* El ícono estará a la izquierda */}
+                                {link.text}   {/* El texto a la derecha del ícono */}
+                            </div>
                         </a>
                     ))}
                 </nav>
+
                 <div className="border-b border-[#276a77]"></div>
                 {/* Footer */}
                 <div className="p-6">
@@ -49,7 +53,10 @@ function Sidebar({ logo, links, isOpen, toggleSidebar }) {
                                  hover:bg-[#254954] hover:text-[#d8f4f5]
                                  active:bg-[#133039]
                                  text-sm text-center">
-                        Cerrar sesión
+                        <div className="flex items-center justify-center">
+                            <BackIcon />
+                            <span className="text-center ml-2">Cerrar sesión</span>
+                        </div>
                     </button>
                 </div>
             </div>

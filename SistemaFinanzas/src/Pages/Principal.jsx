@@ -53,28 +53,8 @@ const Principal = () => {
                         hoverText="Administra tus cuentas"
                         bgColor="#b5e8ec"  // Color 200
                         textColor="#133039"  // Texto oscuro (Color 950)
-                        hoverBgColor="#276a77"  // Hover: Color 700
-                        hoverTextColor="#f0fbfb"  // Hover: Texto blanco claro (Color 100)
-                    />
-
-                    <ButtonCustom
-                        onClick={() => handleOnClick("/transacciones")}
-                        defaultText="Transacciones"
-                        hoverText="Registra tus movimientos"
-                        bgColor="#49bdc7"  // Color 400
-                        textColor="#133039"  // Texto oscuro
-                        hoverBgColor="#2da0ad"  // Hover: Color 500
-                        hoverTextColor="#ffffff"  // Hover: Texto blanco
-                    />
-
-                    <ButtonCustom
-                        onClick={() => handleOnClick("/reportes")}
-                        defaultText="Reportes"
-                        hoverText="Ver estadísticas"
-                        bgColor="#2da0ad"  // Color 500
-                        textColor="#f0fbfb"  // Texto blanco
-                        hoverBgColor="#288292"  // Hover: Color 600
-                        hoverTextColor="#b5e8ec"  // Hover: Texto oscuro
+                        hoverBgColor="#83d7dd"  // Hover: Color 300 (Más suave y acorde)
+                        hoverTextColor="#133039"  // Hover: Texto oscuro para contraste
                     />
 
                     <ButtonCustom
@@ -83,11 +63,29 @@ const Principal = () => {
                         hoverText="Actualiza tu perfil"
                         bgColor="#83d7dd"  // Color 300
                         textColor="#133039"  // Texto oscuro
-                        hoverBgColor="#254954"  // Hover: Color 900
-                        hoverTextColor="#f0fbfb"  // Hover: Texto blanco claro
+                        hoverBgColor="#b5e8ec"  // Hover: Color 200 (más claro y armónico)
+                        hoverTextColor="#133039"  // Hover: Texto oscuro para buen contraste
                     />
 
+                    <ButtonCustom
+                        onClick={() => handleOnClick("/transacciones")}
+                        defaultText="Transacciones"
+                        hoverText="Registra tus movimientos"
+                        bgColor="#49bdc7"  // Color 400
+                        textColor="#133039"  // Texto oscuro
+                        hoverBgColor="#83d7dd"  // Hover: Color 300 (Más suave)
+                        hoverTextColor="#133039"  // Hover: Texto oscuro para contraste
+                    />
 
+                    <ButtonCustom
+                        onClick={() => handleOnClick("/reportes")}
+                        defaultText="Reportes"
+                        hoverText="Ver estadísticas"
+                        bgColor="#2da0ad"  // Color 500
+                        textColor="#f0fbfb"  // Texto blanco
+                        hoverBgColor="#49bdc7"  // Hover: Color 400 (Más claro y atractivo)
+                        hoverTextColor="#133039"  // Hover: Texto oscuro para contraste
+                    />
                 </div>
             </Esquema>
         </>

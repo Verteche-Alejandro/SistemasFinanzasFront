@@ -250,7 +250,7 @@ const CrearCuenta = ({ isOpen, onClose, onGuardarCuenta }) => {
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title="Crear Nueva Cuenta" width="max-w-md" className="mx-4">
+        <Modal isOpen={isOpen} onClose={onClose} title="Crear Nueva Cuenta" width="w-96" className="mx-4">
             <div className="space-y-4">
                 {/* Mensajes de error y éxito */}
                 {errores.api && (
@@ -321,14 +321,15 @@ const CrearCuenta = ({ isOpen, onClose, onGuardarCuenta }) => {
                 />
                 {errores.saldo && <p className="text-red-500 text-sm">{errores.saldo}</p>}
 
-                <div className="flex justify-end gap-4 mt-6">
+                <div className="flex justify-end space-x-4 mt-4">
                     <ButtonForm
                         text="Cancelar"
+                        className="bg-white text-red-600 border-red-600 hover:bg-red-600 hover:text-white hover:border-white"
                         onClick={onClose}
-                        className="button-editar"
                     />
                     <ButtonForm
                         text="Guardar Cuenta"
+                        className="bg-white text-[#2da0ad] border-2 border-[#2da0ad] hover:bg-[#2da0ad] hover:text-white hover:border-white transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-md"
                         onClick={handleGuardar}
                         disabled={loading || Object.keys(errores).length > 0}
                     >

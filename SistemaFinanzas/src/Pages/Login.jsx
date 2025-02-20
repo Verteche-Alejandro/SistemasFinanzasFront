@@ -4,6 +4,9 @@ import ButtonForm from "../Components/Buttons/ButtonForm"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { login } from "../Services/Auth"
+import UserIcon from "../Assets/Icons/UserIcon"
+import PadlockIcon from "../Assets/Icons/PadlockIcon"
+import InfoIcon from "../Assets/Icons/InfoIcon"
 
 const Login = () => {
     const [data, setData] = useState({ login: "", clave: "" });
@@ -32,27 +35,13 @@ const Login = () => {
                                bg-clip-text text-transparent bg-gradient-to-r from-[#2da0ad] to-[#49bdc7]">Iniciar Sesion</h1>
                     <Form>
                         <div className="relative w-full">
-                            <InputForm placeHolder={"Usuario"} onChange={(e) => { setData({ ...data, login: e.target.value }) }} icono={<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                            </svg>
-                            } />
+                            <InputForm
+                                placeHolder={"Usuario"}
+                                onChange={(e) => { setData({ ...data, login: e.target.value }) }}
+                                icono={<UserIcon />} />
 
                             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer group">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    strokeWidth={1.5}
-                                    stroke="currentColor"
-                                    className="w-5 h-5"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        d="M11.25 11.25l.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"
-                                    />
-                                </svg>
-
+                                <InfoIcon />
                                 {/* Tooltip */}
                                 <div className="absolute hidden group-hover:block bg-black text-white text-xs rounded py-1 px-2 -top-8 left-0 w-40 text-center">
                                     Este campo puede ser su nombre de usuario o correo electrónico
@@ -61,12 +50,13 @@ const Login = () => {
                         </div>
 
 
-                        <InputForm type={"password"} placeHolder={"Contraseña"} onChange={(e) => { setData({ ...data, clave: e.target.value }) }} icono={<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
-                        </svg>
-                        } />
+                        <InputForm
+                            type={"password"} placeHolder={"Contraseña"}
+                            onChange={(e) => { setData({ ...data, clave: e.target.value }) }}
+                            icono={<PadlockIcon />}
+                        />
                         <ButtonForm className="w-full max-w-xs bg-[#2da0ad] hover:bg-[#288292] 
-                                     transform hover:scale-105 transition-all duration-200" text={"Acceder"} type={"button"} onClick={Login} />
+                                     transform hover:scale-105 transition-all duration-200 text-white" text={"Acceder"} type={"button"} onClick={Login} />
                         {errores && (<p className="text-red-500 text-center font-semibold">{errores}</p>)}
                     </Form>
                 </div>

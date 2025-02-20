@@ -102,15 +102,14 @@ const Transacciones = () => {
                 <p className="text-gray-500 mb-6">Registra y gestiona tus movimientos</p>
 
                 {/* Filtros y botones */}
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 ">
-                    <button
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4">
+                    <ButtonForm
+                        text="Nueva transaccion"
                         onClick={() => setOpenModal(true)}
                         className="flex text-white items-center rounded-lg p-2 max-w-xs bg-[#2da0ad] hover:bg-[#288292] 
-                                     transform hover:scale-105 transition-all duration-200 mb-4"
-                    >
-                        <PlusIcon />
-                        <span className="font-semibold ml-2">Nueva Transaccion</span>
-                    </button>
+                                     transform hover:scale-105 transition-all duration-200"
+                        icono={<PlusIcon />}>
+                    </ButtonForm>
                     <div className="flex flex-wrap gap-4 justify-between w-full sm:w-auto">
                         <Buscador onSearch={buscar} className="w-full sm:w-60" />
                         <select

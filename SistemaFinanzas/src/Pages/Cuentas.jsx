@@ -266,12 +266,15 @@ const Cuentas = () => {
                                     </div>
                                 </div>
                                 <div className="buttons flex flex-wrap items-center justify-center gap-4 mt-4">
-                                    <button className="button-cancelar">
-                                        Editar
-                                    </button>
-                                    <button onClick={() => eliminarCuenta(cuenta.cuenta_id)} className="button-eliminar">
-                                        Eliminar
-                                    </button>
+                                    <ButtonForm
+                                        text="Editar Datos"
+                                        className="bg-white text-[#2da0ad] border-2 border-[#2da0ad] hover:bg-[#2da0ad] hover:text-white hover:border-white transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-md"
+                                    />
+                                    <ButtonForm
+                                        text="Eliminar"
+                                        className="bg-white text-red-600 border-red-600 hover:bg-red-600 hover:text-white hover:border-white"
+                                        onClick={eliminarCuenta}
+                                    />
                                 </div>
                             </div>
                         ))}
