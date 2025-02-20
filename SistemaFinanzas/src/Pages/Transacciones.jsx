@@ -7,6 +7,7 @@ import NuevaTransac from "../Layouts/NuevaTransac";
 import { getTransaccionesByCuenta, buscarTransaccionPorAlias } from "../Services/Controllers/Transaccion";
 import { getCuentasByUsuarioId } from "../Services/Controllers/Cuenta";
 import PlusIcon from "../Assets/Icons/PlusIcon"
+import SelectForm from "../Components/Inputs/SelectForm";
 
 const Transacciones = () => {
     const [openModal, setOpenModal] = useState(false);
@@ -102,7 +103,7 @@ const Transacciones = () => {
                 <p className="text-gray-500 mb-6">Registra y gestiona tus movimientos</p>
 
                 {/* Filtros y botones */}
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-2 mt-2">
                     <ButtonForm
                         text="Nueva transaccion"
                         onClick={() => setOpenModal(true)}
@@ -110,18 +111,23 @@ const Transacciones = () => {
                                      transform hover:scale-105 transition-all duration-200"
                         icono={<PlusIcon />}>
                     </ButtonForm>
-                    <div className="flex flex-wrap gap-4 justify-between w-full sm:w-auto">
-                        <Buscador onSearch={buscar} className="w-full sm:w-60" />
-                        <select
+                    <Buscador onSearch={buscar} className="w-full sm:w-60" />
+                    <div className="flex flex-col justify-between w-full sm:w-auto">
+                        <SelectForm
+                            label="Filtrar por tipo"
+                            name="tipoFiltro"
                             value={tipoFiltro}
                             onChange={(e) => filtrarPorTipo(e.target.value)}
-                            className="bg-zinc-800 border border-zinc-700 text-white px-3 py-2 rounded-md shadow text-sm w-full sm:w-auto">
-                            <option value="" >Todos</option>
-                            <option value="DEPOSITO">Depósito</option>
-                            <option value="TRANSFERENCIA">Transferencia</option>
-                            <option value="PAGO">Pago</option>
-                            <option value="RETIRO">Retiro</option>
-                        </select>
+                            options={[
+                                { value: "", label: "Todos" },
+                                { value: "DEPOSITO", label: "Depósito" },
+                                { value: "TRANSFERENCIA", label: "Transferencia" },
+                                { value: "PAGO", label: "Pago" },
+                                { value: "RETIRO", label: "Retiro" },
+                            ]}
+                            titleOption="Selecciona un tipo"
+                            className="w-50"
+                        />
                     </div>
                 </div>
 

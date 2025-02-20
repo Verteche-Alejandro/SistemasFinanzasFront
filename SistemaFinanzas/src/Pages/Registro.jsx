@@ -41,6 +41,10 @@ const RegistroUsuario = () => {
             nuevoErrores.usuario = "El nombre de usuario debe tener entre 3 y 20 caracteres";
         }
 
+        if (/^\d+$/.test(dataToValidate.usuario)) {
+            nuevoErrores.usuario = "El nombre de usuario no puede contener solo números";
+        }
+
         // Validar formato de email
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(dataToValidate.email)) {
@@ -240,9 +244,7 @@ const RegistroUsuario = () => {
                             text={"Registrarse"}
                             onClick={Registrar}
                             className="w-full max-w-xs bg-[#2da0ad] hover:bg-[#288292] 
-                                     transform hover:scale-105 transition-all duration-200 text-white"
-                        >
-                            Registrarse
+                                     transform hover:scale-105 transition-all duration-200 text-white">
                         </ButtonForm>
                         <button
                             onClick={() => handleOnClick("/login")}
