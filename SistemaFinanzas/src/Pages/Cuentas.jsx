@@ -9,6 +9,7 @@ import { deleteCuenta } from "../Services/Controllers/Cuenta";
 import ButtonForm from "../Components/Buttons/ButtonForm";
 import PlusIcon from "../Assets/Icons/PlusIcon";
 import Bell from "../Assets/Icons/Bell"
+import DeleteCuenta from "../Layouts/DeleteCuenta";
 
 const Cuentas = () => {
     const [cuentas, setCuentas] = useState([]);
@@ -22,11 +23,18 @@ const Cuentas = () => {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [erroresAlarma, setErroresAlarma] = useState('');
     const [showEditModal, setShowEditModal] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [cuentaEliminar, setCuentaEliminar] = useState(null);
     const [cuentaSeleccionada, setCuentaSeleccionada] = useState(null);
 
     const handleEditarClick = (cuenta) => {
         setCuentaSeleccionada(cuenta);
         setShowEditModal(true);
+    };
+
+    const handleDeleteClick = (cuenta) => {
+        setCuentaEliminar(cuenta);
+        setShowDeleteModal(true);
     };
 
     const handleActualizarCuenta = (cuentaActualizada) => {
@@ -55,6 +63,14 @@ const Cuentas = () => {
         } catch (error) {
             console.error("Error:", error);
             setError(error.message);
+        }
+    };
+
+    const handleConfirmarDelete = async () => {
+        if (cuentaEliminar) {
+            await eliminarCuenta(cuentaEliminar.cuenta_id);
+            setShowDeleteModal(false);
+            setAccountToDelete(null);
         }
     };
 
@@ -253,6 +269,16 @@ const Cuentas = () => {
                         onActualizar={handleActualizarCuenta}
                     />
 
+                    <DeleteCuenta
+                        isOpen={showDeleteModal}
+                        onClose={() => {
+                            setShowDeleteModal(false);
+                            cuentaEliminar(null);
+                        }}
+                        onConfirm={handleConfirmarDelete}
+                        accountName={cuentaEliminar?.alias}
+                    />
+
                     {showNotification && (
                         <CustomAlert
                             title="¡Atención! Cuentas con saldo bajo"
@@ -302,7 +328,7 @@ const Cuentas = () => {
                                     <ButtonForm
                                         text="Eliminar"
                                         className="bg-white text-red-600 border-red-600 hover:bg-red-600 hover:text-white hover:border-white"
-                                        onClick={() => eliminarCuenta(cuenta.cuenta_id)}
+                                        onClick={() => handleDeleteClick(cuenta)}
                                     />
                                 </div>
                             </div>
