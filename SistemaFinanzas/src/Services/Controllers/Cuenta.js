@@ -1,4 +1,4 @@
-import { GETBYID, POST,DELETE } from '../Fetch';
+import { GETBYID, POST, DELETE,PATCH } from '../Fetch';
 
 export const createCuenta = async (data) => {
     try {
@@ -27,5 +27,16 @@ export const deleteCuenta = async (cuenta_id) => {
     } catch (error) {
         console.error("Error en la solicitud DELETE en cuenta:", error);
         return {};
+    }
+}
+
+export const updateCuenta = async (cuenta_id, data) => {
+    try {
+        let rsp = await PATCH(`/controller/cuentas/${cuenta_id}`, data);
+        return rsp || {}
+    } catch (error) {
+        console.error("Error en la solicitud updateCuenta en cuenta");
+        throw error;
+
     }
 }

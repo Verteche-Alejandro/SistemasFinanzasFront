@@ -3,6 +3,7 @@ import Modal from "../Components/Modals/Modal";
 import InputForm from "../Components/Inputs/InputForm";
 import { registrarTransaccion } from "../Services/Controllers/Transaccion";
 import ButtonForm from "../Components/Buttons/ButtonForm";
+import SelectForm from "../Components/Inputs/SelectForm";
 
 const NuevaTransac = ({ isOpen, onClose, cuentas, onActualizarCuentas }) => {
     const estadoInicial = {
@@ -37,7 +38,7 @@ const NuevaTransac = ({ isOpen, onClose, cuentas, onActualizarCuentas }) => {
             if (montoNumerico <= 0) {
                 nuevosErrores.monto = "El monto debe ser mayor a 0";
             }
-            if (montoNumerico > 1000000) {
+            if (montoNumerico > 10000000) {
                 nuevosErrores.monto = "El monto no puede superar 1,000,000";
             }
             if (!Number.isInteger(montoNumerico * 100)) {
@@ -165,41 +166,34 @@ const NuevaTransac = ({ isOpen, onClose, cuentas, onActualizarCuentas }) => {
                 />
                 {errores.monto && <p className="text-red-500 text-sm">{errores.monto}</p>}
 
-                <div className="form-group">
-                    <label className="block mb-2 text-sm font-medium">Tipo de Transacción</label>
-                    <select
+                <div className="flex flex-col m-2 form-group">
+                    <SelectForm
+                        label="Tipo de Transacción"
                         name="tipo_transaccion"
                         value={transaccion.tipo_transaccion}
                         onChange={(e) => {
                             setTransaccion({ ...transaccion, tipo_transaccion: e.target.value });
-                            setErrores(prev => ({ ...prev, tipo_transaccion: "" }));
+                            setErrores((prev) => ({ ...prev, tipo_transaccion: "" }));
                         }}
-                        className="bg-white rounded-lg py-2 px-2 border border-gray-300"
-                    >
-                        <option value="" disabled>Seleccione tipo</option>
-                        <option value="DEPOSITO">DEPOSITO</option>
-                        <option value="RETIRO">RETIRO</option>
-                        <option value="TRANSFERENCIA">TRANSFERENCIA</option>
-                        <option value="PAGO">PAGO</option>
-                    </select>
+                        options={[
+                            { value: "DEPOSITO", label: "DEPOSITO" },
+                            { value: "RETIRO", label: "RETIRO" },
+                            { value: "TRANSFERENCIA", label: "TRANSFERENCIA" },
+                            { value: "PAGO", label: "PAGO" },
+                        ]}
+                    />
                     {errores.tipo_transaccion && <p className="text-red-500 text-sm">{errores.tipo_transaccion}</p>}
-                </div>
 
-                <div className="form-group">
-                    <label className="block mb-2 text-sm font-medium">Cuenta</label>
-                    <select
+                    <SelectForm
+                        label="Cuenta"
                         name="cuenta_id"
                         value={transaccion.cuenta.cuenta_id}
                         onChange={handleCuentaChange}
-                        className="bg-white rounded-lg py-2 px-2 border border-gray-300"
-                    >
-                        <option value="">Seleccione una cuenta</option>
-                        {cuentas.map((cuenta) => (
-                            <option key={cuenta.cuenta_id} value={cuenta.cuenta_id}>
-                                {cuenta.alias} - (Saldo: {formatearNumero(cuenta.saldo)})
-                            </option>
-                        ))}
-                    </select>
+                        options={cuentas.map((cuenta) => ({
+                            value: cuenta.cuenta_id,
+                            label: `${cuenta.alias} - (Saldo: ${formatearNumero(cuenta.saldo)})`,
+                        }))}
+                    />
                     {errores.cuenta_id && <p className="text-red-500 text-sm">{errores.cuenta_id}</p>}
                 </div>
 

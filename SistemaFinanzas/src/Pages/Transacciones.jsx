@@ -116,7 +116,7 @@ const Transacciones = () => {
                             value={tipoFiltro}
                             onChange={(e) => filtrarPorTipo(e.target.value)}
                             className="bg-zinc-800 border border-zinc-700 text-white px-3 py-2 rounded-md shadow text-sm w-full sm:w-auto">
-                            <option value="">Todos</option>
+                            <option value="" >Todos</option>
                             <option value="DEPOSITO">Depósito</option>
                             <option value="TRANSFERENCIA">Transferencia</option>
                             <option value="PAGO">Pago</option>

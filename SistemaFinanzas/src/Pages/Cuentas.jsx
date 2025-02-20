@@ -4,9 +4,11 @@ import { getCuentasByUsuarioId } from "../Services/Controllers/Cuenta";
 import CustomAlert from "../Components/CustomAlert";
 import ModalAlerta from "../Layouts/ModalAlerta";
 import CrearCuenta from "../Layouts/CrearCuenta";
+import EditarCuenta from "../Layouts/EditarCuenta";
 import { deleteCuenta } from "../Services/Controllers/Cuenta";
 import ButtonForm from "../Components/Buttons/ButtonForm";
 import PlusIcon from "../Assets/Icons/PlusIcon";
+import Bell from "../Assets/Icons/Bell"
 
 const Cuentas = () => {
     const [cuentas, setCuentas] = useState([]);
@@ -19,20 +21,42 @@ const Cuentas = () => {
     const [tempMontoAlarma, setTempMontoAlarma] = useState('');
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [erroresAlarma, setErroresAlarma] = useState('');
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [cuentaSeleccionada, setCuentaSeleccionada] = useState(null);
 
-    const eliminarCuenta = async (cuenta_id) => {
+    const handleEditarClick = (cuenta) => {
+        setCuentaSeleccionada(cuenta);
+        setShowEditModal(true);
+    };
+
+    const handleActualizarCuenta = (cuentaActualizada) => {
+        setCuentas(prevCuentas => {
+            const cuentasActualizadas = prevCuentas.map(cuenta =>
+                cuenta.cuenta_id === cuentaActualizada.cuenta_id ? cuentaActualizada : cuenta
+            );
+            sessionStorage.setItem("cuentasUsuario", JSON.stringify(cuentasActualizadas));
+            return cuentasActualizadas;
+        });
+    };
+
+    // Modificar la función eliminarCuenta para incluir el ID
+    const eliminarCuenta = async (id) => {
         try {
-            const response = await deleteCuenta(cuenta_id);
+            const response = await deleteCuenta(id);
             if (!response) {
                 throw new Error("No se pudo eliminar la cuenta");
             }
 
-            setCuentas((prevCuentas) => prevCuentas.filter((cuenta) => cuenta.cuenta_id !== cuenta_id));
+            setCuentas((prevCuentas) => {
+                const cuentasActualizadas = prevCuentas.filter((cuenta) => cuenta.cuenta_id !== id);
+                sessionStorage.setItem("cuentasUsuario", JSON.stringify(cuentasActualizadas));
+                return cuentasActualizadas;
+            });
         } catch (error) {
             console.error("Error:", error);
             setError(error.message);
         }
-    }
+    };
 
     useEffect(() => {
         const cargarCuentas = async () => {
@@ -178,20 +202,14 @@ const Cuentas = () => {
                     </div>
 
                     <div className="mb-6 max-w-md mx-auto w-full">
-                        <button
+                        <ButtonForm
+                            text={montoAlarma ? 'Modificar Alerta (Actual: $' + Number(montoAlarma).toLocaleString("es-ES") + ')' : 'Establecer Alerta de Saldo'}
                             onClick={() => setShowModal(true)}
-                            className="w-full bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-all duration-300 flex items-center justify-center gap-2"
-                        >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                                />
-                            </svg>
-                            {montoAlarma ? 'Modificar Alerta (Actual: $' + Number(montoAlarma).toLocaleString("es-ES") + ')' : 'Establecer Alerta de Saldo'}
-                        </button>
+                            className="w-full bg-white text-[#2da0ad] border-2 border-[#2da0ad] px-6 py-3 rounded-lg hover:bg-[#b5e8ec] active:bg-[#83d7dd] transition-all duration-300 flex items-center justify-center gap-2"
+                            icono={<Bell />}>
+                        </ButtonForm>
+
+
                     </div>
 
                     <div className="mb-6 max-w-md mx-auto">
@@ -223,6 +241,16 @@ const Cuentas = () => {
                         isOpen={showCreateModal}
                         onClose={() => setShowCreateModal(false)}
                         onGuardarCuenta={handleGuardarCuenta}
+                    />
+
+                    <EditarCuenta
+                        isOpen={showEditModal}
+                        onClose={() => {
+                            setShowEditModal(false);
+                            setCuentaSeleccionada(null);
+                        }}
+                        cuenta={cuentaSeleccionada}
+                        onActualizar={handleActualizarCuenta}
                     />
 
                     {showNotification && (
@@ -269,11 +297,12 @@ const Cuentas = () => {
                                     <ButtonForm
                                         text="Editar Datos"
                                         className="bg-white text-[#2da0ad] border-2 border-[#2da0ad] hover:bg-[#2da0ad] hover:text-white hover:border-white transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-md"
+                                        onClick={() => handleEditarClick(cuenta)}
                                     />
                                     <ButtonForm
                                         text="Eliminar"
                                         className="bg-white text-red-600 border-red-600 hover:bg-red-600 hover:text-white hover:border-white"
-                                        onClick={eliminarCuenta}
+                                        onClick={() => eliminarCuenta(cuenta.cuenta_id)}
                                     />
                                 </div>
                             </div>

@@ -3,9 +3,9 @@ import Modal from '../Components/Modals/Modal';
 import InputForm from '../Components/Inputs/InputForm';
 import ButtonForm from '../Components/Buttons/ButtonForm';
 
-const ModalAlerta = ({ isOpen, onClose, onGuardar, montoAlarma, onChange,errores }) => {
+const ModalAlerta = ({ isOpen, onClose, onGuardar, montoAlarma, onChange, errores }) => {
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title="Configurar Alerta de Saldo" width="max-w-md">
+        <Modal isOpen={isOpen} onClose={onClose} title="Configurar Alerta de Saldo" width="w-80">
             <div className="mb-4">
                 <InputForm
                     label="Ingrese el monto mínimo para la alerta:"
@@ -17,14 +17,15 @@ const ModalAlerta = ({ isOpen, onClose, onGuardar, montoAlarma, onChange,errores
                 {errores && <p className="text-red-500 text-sm">{errores}</p>}
             </div>
             <div className="flex justify-end gap-4">
-                <button
+                <ButtonForm
                     onClick={onClose}
-                    className="button-editar mt-4">
-                    Cancelar
-                </button>
+                    className="bg-white text-red-600 border-red-600 hover:bg-red-600 hover:text-white hover:border-white"
+                    text="Cancelar">
+                </ButtonForm>
                 <ButtonForm
                     text="Guardar alerta"
-                    onClick={onGuardar}>
+                    onClick={onGuardar}
+                    className="bg-white text-[#2da0ad] border-2 border-[#2da0ad] hover:bg-[#2da0ad] hover:text-white hover:border-white transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-md">
                 </ButtonForm>
             </div>
         </Modal>

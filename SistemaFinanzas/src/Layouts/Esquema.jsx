@@ -16,50 +16,9 @@ const Esquema = ({ children }) => {
     ]);
 
     const [sidebarOpen, setSidebarOpen] = useState(false);
-    const [time, setTime] = useState(new Date());
-
-    // Actualiza el reloj cada segundo
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setTime(new Date());
-        }, 1000);
-
-        return () => clearInterval(timer);
-    }, []);
-
-    // Formatea la hora en formato HH:MM sin AM/PM
-    const formatTime = (date) => {
-        const timeStr = date.toLocaleTimeString("es-ES", { hour: '2-digit', minute: '2-digit', hour12: true });
-        return timeStr.replace(/ [AP]M$/, '');
-    };
-
-    // Obtiene AM/PM en español
-    const getAmPm = (date) => {
-        const parts = date.toLocaleTimeString("es-ES", { hour12: true }).split(' ');
-        return parts[1] || '';
-    };
-
-    // Obtiene el nombre del día en español (con la primera letra en mayúscula)
-    const getWeekDay = (date) => {
-        const weekday = date.toLocaleDateString("es-ES", { weekday: 'long' });
-        return weekday.charAt(0).toUpperCase() + weekday.slice(1);
-    };
-
-    // Obtiene el número del día
-    const getDayNumber = (date) => {
-        return date.getDate();
-    };
 
     return (
         <div className="relative h-[93vh] w-full">
-            {/* Tarjeta de tiempo en la esquina superior derecha */}
-            <div className="absolute top-4 right-4 z-10">
-                <div className="card-time">
-                    <span className="time-text">{formatTime(time)}</span>
-                    <span className="day-text">{`${getWeekDay(time)} ${getDayNumber(time)}`}</span>
-                    <div className="moon">🌙</div>
-                </div>
-            </div>
 
             <div className="flex items-center justify-center h-full w-full">
                 <div className="relative flex h-[90vh] w-[80vw] rounded-3xl shadow-lg overflow-hidden">
