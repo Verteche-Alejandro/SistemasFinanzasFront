@@ -104,7 +104,7 @@ const Cuentas = () => {
                     setCuentas(cuentasParseadas);
                 }
 
-                const montoAlarmaSession = sessionStorage.getItem(`montoAlarma_${id}`);
+                const montoAlarmaSession = localStorage.getItem(`montoAlarma_${id}`);
                 if (montoAlarmaSession) {
                     setMontoAlarma(montoAlarmaSession);
                     setTempMontoAlarma(montoAlarmaSession);
@@ -163,7 +163,7 @@ const Cuentas = () => {
         }
 
         const id = localStorage.getItem("usuario_id");
-        sessionStorage.setItem(`montoAlarma_${id}`, tempMontoAlarma);
+        localStorage.setItem(`montoAlarma_${id}`, tempMontoAlarma);
         setMontoAlarma(tempMontoAlarma);
         setShowModal(false);
         setErroresAlarma('');
@@ -200,6 +200,16 @@ const Cuentas = () => {
         );
     }
 
+    if (error) {
+        <Esquema>
+            <div className="p-6">
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                    {error}
+                </div>
+            </div>
+        </Esquema>
+    }
+
     function formatearNumero(num) {
         const numero = parseFloat(num);
         if (isNaN(numero)) return '0.00';
@@ -210,7 +220,7 @@ const Cuentas = () => {
         <Esquema>
             {/* Contenedor principal con h-screen y overflow-auto */}
             <div className="h-screen overflow-auto">
-                <div className="flex flex-col p-6 justify-center">
+                <div className="flex flex-col p-6 justify-center items-center">
                     <div className="flex justify-center items-center mb-8">
                         <h1 className="bg-gradient-to-r from-[#49bdc7] to-[#83d7dd] text-transparent bg-clip-text text-4xl">
                             Mis Cuentas

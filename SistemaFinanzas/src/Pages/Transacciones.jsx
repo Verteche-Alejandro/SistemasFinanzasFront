@@ -6,7 +6,7 @@ import TableTransac from "../Layouts/TableTransac";
 import NuevaTransac from "../Layouts/NuevaTransac";
 import { getTransaccionesByCuenta, buscarTransaccionPorAlias } from "../Services/Controllers/Transaccion";
 import { getCuentasByUsuarioId } from "../Services/Controllers/Cuenta";
-import PlusIcon from "../Assets/Icons/PlusIcon"
+import PlusIcon from "../Assets/Icons/PlusIcon";
 import SelectForm from "../Components/Inputs/SelectForm";
 
 const Transacciones = () => {
@@ -98,10 +98,10 @@ const Transacciones = () => {
 
     return (
         <Esquema>
-            <div className="p-6 space-y-6">
+            <div className="p-4 space-y-4 md:p-6 md:space-y-6">
                 {/* Header Section */}
                 <div className="border-b pb-4">
-                    <h1 className="bg-gradient-to-r from-[#49bdc7] to-[#83d7dd] text-transparent bg-clip-text text-4xl">
+                    <h1 className="bg-gradient-to-r from-[#49bdc7] to-[#83d7dd] text-transparent bg-clip-text text-2xl md:text-3xl lg:text-4xl">
                         Gestionar Transacciones
                     </h1>
                     <p className="text-gray-500 mt-2">Registra y gestiona tus movimientos</p>
@@ -114,12 +114,10 @@ const Transacciones = () => {
                         <ButtonForm
                             text="Nueva transacción"
                             onClick={() => setOpenModal(true)}
-                            className="flex text-white items-center rounded-lg px-4 py-2 w-full sm:w-auto
-                                     bg-[#2da0ad] hover:bg-[#288292] transform hover:scale-105 
-                                     transition-all duration-200 justify-center sm:justify-start"
+                            className="flex text-white items-center rounded-lg px-4 py-2 w-full sm:w-auto bg-[#2da0ad] hover:bg-[#288292] transform hover:scale-105 transition-all duration-200 justify-center"
                             icono={<PlusIcon className="mr-2" />}
                         />
-                        <div className="w-full sm:w-96">
+                        <div className="w-full sm:w-80 md:w-96">
                             <Buscador
                                 onSearch={buscar}
                                 className="w-full"
@@ -150,7 +148,7 @@ const Transacciones = () => {
                 </div>
 
                 {/* Table Section */}
-                <div className="bg-white rounded-lg shadow-sm">
+                <div className="bg-white rounded-lg shadow-sm overflow-x-auto">
                     {cargando ? (
                         <div className="text-center py-8">
                             <p className="text-gray-500">Cargando...</p>
@@ -170,6 +168,7 @@ const Transacciones = () => {
                 onClose={() => setOpenModal(false)}
                 cuentas={cuentas}
                 onActualizarCuentas={actualizarCuentas}
+                className="max-w-lg w-full"
             />
         </Esquema>
     );

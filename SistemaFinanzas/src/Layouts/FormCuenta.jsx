@@ -261,7 +261,7 @@ const FormCuenta = ({ cuenta, onSubmit, onCancel, loading, submitButtonText = "G
                 step="0.01"
             />
             {errores.saldo && <p className="text-red-500 text-sm">{errores.saldo}</p>}
-            <p className="text-gray-500 text-xs mt-1">El saldo mínimo debe ser de $5.000</p>
+            <p className="text-gray-500 text-xs mt-1">El saldo mínimo es de $5.000</p>
 
             <div className="flex justify-end space-x-4 mt-4">
                 <ButtonForm

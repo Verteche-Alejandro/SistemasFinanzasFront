@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import { Bar } from "react-chartjs-2";
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, Colors } from "chart.js";
-import generarReporte from "../Services/Controllers/Reporte"
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
+import generarReporte from "../Services/Controllers/Reporte";
 
-// Registra los componentes de Chart.js
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const ReporteTransac = ({ cuenta_id }) => {
@@ -12,16 +11,15 @@ const ReporteTransac = ({ cuenta_id }) => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        if (!cuenta_id) return; // Evita hacer la petición si cuenta_id aún no está definido
+        if (!cuenta_id) return;
 
         const obtenerTotales = async () => {
             try {
-                console.log("Llamando a la API con cuenta_id:", cuenta_id);
                 const response = await generarReporte(cuenta_id);
                 if (!response) return;
                 setTotales(response);
             } catch (err) {
-                setError("Hubo un error al obtener los datos.");
+                setError("Error al cargar los datos del reporte");
             } finally {
                 setLoading(false);
             }
@@ -30,68 +28,86 @@ const ReporteTransac = ({ cuenta_id }) => {
         obtenerTotales();
     }, [cuenta_id]);
 
-
     if (loading) {
-        return <div>Loading...</div>;
+        return (
+            <div className="h-full flex items-center justify-center">
+                <p className="text-gray-500">Cargando reporte...</p>
+            </div>
+        );
     }
 
     if (error) {
-        return <div>{error}</div>;
+        return (
+            <div className="h-full flex items-center justify-center">
+                <p className="text-red-500">{error}</p>
+            </div>
+        );
     }
 
-    // Formateamos los datos para Chart.js
     const data = {
-        labels: Object.keys(totales), // Las categorías (DEPOSITO, PAGO, etc.)
+        labels: Object.keys(totales),
         datasets: [
             {
                 label: "Monto de Transacciones",
-                data: Object.values(totales), // Los valores de cada tipo de transacción
-                backgroundColor: "rgba(75, 192, 192, 0.2)", // Color de fondo de las barras
-                borderColor: "rgba(75, 192, 192, 1)", // Color del borde de las barras
-                borderWidth: 3, // Ancho del borde
+                data: Object.values(totales),
+                backgroundColor: [
+                    'rgba(75, 192, 192, 0.2)',  // Verde agua
+                    'rgba(54, 162, 235, 0.2)',  // Azul
+                    'rgba(255, 206, 86, 0.2)',  // Amarillo
+                    'rgba(255, 99, 132, 0.2)',  // Rosa
+                ],
+                borderColor: [
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(255, 99, 132, 1)',
+                ],
+                borderWidth: 2,
             },
         ],
     };
 
     const options = {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
             legend: {
                 position: "top",
             },
             title: {
-                display: true,
-                text: "Reporte de Transacciones por Tipo",
-                font: {
-                    size: 24,  // Tamaño de la fuente del título
-                    weight: 'bold',  // Grosor de la fuente del título
-                },
+                display: false,
             },
         },
         scales: {
             x: {
                 beginAtZero: true,
+                grid: {
+                    display: false,
+                },
                 ticks: {
                     font: {
-                        size: 14, // Tamaño de la fuente para las etiquetas del eje X
-                        weight: 'bold', // Grosor de la fuente para las etiquetas del eje X
+                        size: 12,
+                        weight: 'bold',
                     },
-                }, // Empieza el eje X en 0
+                },
             },
             y: {
                 beginAtZero: true,
+                grid: {
+                    color: 'rgba(0, 0, 0, 0.1)',
+                },
                 ticks: {
                     font: {
-                        size: 14, // Tamaño de la fuente para las etiquetas del eje X
-                        weight: 'bold', // Grosor de la fuente para las etiquetas del eje X
+                        size: 12,
+                        weight: 'bold',
                     },
-                }, // Empieza el eje X en 0 // Empieza el eje Y en 0
+                },
             },
         },
     };
 
     return (
-        <div className="w-full h-full flex justify-center items-center">
+        <div className="w-full h-full">
             <Bar data={data} options={options} />
         </div>
     );

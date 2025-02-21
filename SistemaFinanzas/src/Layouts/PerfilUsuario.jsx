@@ -6,6 +6,7 @@ import ButtonForm from "../Components/Buttons/ButtonForm";
 import userImg from "../Assets/Img/user.png";
 import PencilIcon from "../Assets/Icons/PencilIcon";
 import KeyIcon from "../Assets/Icons/KeyIcon";
+import InfoIcon from "../Assets/Icons/InfoIcon"
 
 const PerfilUsuario = ({ info }) => {
     const [usuario, setUsuario] = useState({
@@ -267,21 +268,7 @@ const PerfilUsuario = ({ info }) => {
 
             <Modal isOpen={modals.editando} onClose={() => handleModalToggle('editando', false)} title="Editar Perfil" width="w-96">
                 <div className="absolute left-0 top-5 cursor-pointer group">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={1.5}
-                        stroke="currentColor"
-                        className="w-5 h-5"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M11.25 11.25l.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"
-                        />
-                    </svg>
-
+                    <InfoIcon/>
                     {/* Tooltip */}
                     <div className="absolute hidden group-hover:block bg-black text-white text-xs rounded py-1 px-2 w-48 text-center left-1/2 transform -translate-x-1/2 top-full mt-1">
                         Si se realizan cambios, la próxima vez deberá iniciar sesión con los mismos.
