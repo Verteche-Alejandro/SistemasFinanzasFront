@@ -10,16 +10,6 @@ export const getTransaccionesByCuenta = async (cuenta_id) => {
     }
 };
 
-export const getAllTransacciones = async () => {
-    try {
-        let rsp = await GET("/controller/transacciones/alltransacciones");
-        return rsp || [];
-    } catch (error) {
-        console.error("Error en la solicitud GET en transaccion:", error);
-        return [];
-    }
-}
-
 export const registrarTransaccion = async (data) => {
     try {
         let rsp = await POST('/controller/transacciones', data);
