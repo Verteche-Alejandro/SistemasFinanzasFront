@@ -23,6 +23,7 @@ const convertirAFechaLocal = (fechaString) => {
 const NuevaTransac = ({ isOpen, onClose, cuentas, onActualizarCuentas }) => {
   const estadoInicial = {
     monto: "",
+    detalle: "",
     tipo_transaccion: "",
     fecha: obtenerFechaLocal(),
     cuenta: { cuenta_id: "" },
@@ -145,6 +146,7 @@ const NuevaTransac = ({ isOpen, onClose, cuentas, onActualizarCuentas }) => {
       const datosTransaccion = {
         ...transaccion,
         monto: Number(transaccion.monto),
+        detalle: transaccion.detalle,
         fecha: fechaFormateada,
         cuenta: { cuenta_id: Number(transaccion.cuenta.cuenta_id) },
         moneda: { moneda_id: Number(transaccion.moneda.moneda_id) }
@@ -202,6 +204,19 @@ const NuevaTransac = ({ isOpen, onClose, cuentas, onActualizarCuentas }) => {
         />
         {errores.monto && <p className="text-red-500 text-sm">{errores.monto}</p>}
 
+        <InputForm
+          label="Detalle"
+          type="text"
+          name="detalle"
+          value={transaccion.detalle}
+          onChange={(e) => {
+            setTransaccion({ ...transaccion, detalle: e.target.value });
+            setErrores(prev => ({ ...prev, detalle: "" }));
+          }}
+          placeHolder="Ingrese el detalle"
+        />
+        {errores.detalle && <p className="text-red-500 text-sm">{errores.detalle}</p>}
+
         <div className="flex flex-col m-2 form-group">
           <SelectForm
             label="Tipo de Transacción"
@@ -213,10 +228,11 @@ const NuevaTransac = ({ isOpen, onClose, cuentas, onActualizarCuentas }) => {
               setErrores(prev => ({ ...prev, tipo_transaccion: "" }));
             }}
             options={[
-              { value: "DEPOSITO", label: "DEPOSITO" },
-              { value: "RETIRO", label: "RETIRO" },
-              { value: "TRANSFERENCIA", label: "TRANSFERENCIA" },
-              { value: "PAGO", label: "PAGO" },
+              { value: "Cobro", label: "Cobro" },
+              { value: "Deposito", label: "Deposito" },
+              { value: "Retiro", label: "Retiro" },
+              { value: "Transferencia", label: "Transferencia" },
+              { value: "Pago", label: "Pago" },
             ]}
           />
           {errores.tipo_transaccion && <p className="text-red-500 text-sm">{errores.tipo_transaccion}</p>}

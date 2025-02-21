@@ -1,4 +1,4 @@
-import { POST, GETBYID, DELETE, GET } from '../Fetch';
+import { POST, GETBYID, DELETE} from '../Fetch';
 
 export const getTransaccionesByCuenta = async (cuenta_id) => {
     try {

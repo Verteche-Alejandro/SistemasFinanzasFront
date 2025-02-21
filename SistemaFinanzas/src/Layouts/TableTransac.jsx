@@ -13,6 +13,7 @@ const TableTransac = ({ transacciones, onActualizarCuentas }) => {
 
     const headers = [
         "Fecha",
+        "Detalle",
         "Monto",
         "Tipo",
         "Cuenta/Alias",
@@ -90,6 +91,9 @@ const TableTransac = ({ transacciones, onActualizarCuentas }) => {
                         <tr key={index} className="hover:bg-gray-50">
                             <td className="px-4 py-2">
                                 {formatearFecha(transaccion.fecha)}
+                            </td>
+                            <td className='px-4 py-2'>
+                                {transaccion.detalle}
                             </td>
                             <td className="px-4 py-2">
                                 ${formatearNumero(transaccion.monto)}

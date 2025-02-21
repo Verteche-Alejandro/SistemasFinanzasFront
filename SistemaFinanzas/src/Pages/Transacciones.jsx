@@ -135,10 +135,11 @@ const Transacciones = () => {
                                 onChange={(e) => filtrarPorTipo(e.target.value)}
                                 options={[
                                     { value: "", label: "Todos" },
-                                    { value: "DEPOSITO", label: "Depósito" },
-                                    { value: "TRANSFERENCIA", label: "Transferencia" },
-                                    { value: "PAGO", label: "Pago" },
-                                    { value: "RETIRO", label: "Retiro" },
+                                    { value: "Cobro", label: "Cobro" },
+                                    { value: "Deposito", label: "Depósito" },
+                                    { value: "Transferencia", label: "Transferencia" },
+                                    { value: "Pago", label: "Pago" },
+                                    { value: "Retiro", label: "Retiro" },
                                 ]}
                                 titleOption="Selecciona un tipo"
                                 className="w-full"
