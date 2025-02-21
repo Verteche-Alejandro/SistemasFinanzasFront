@@ -62,6 +62,16 @@ const NuevaTransac = ({ isOpen, onClose, cuentas, onActualizarCuentas }) => {
       }
     }
 
+    // Validación de detalle
+    if (!transaccion.detalle.trim()) {
+      nuevosErrores.detalle = "El detalle es obligatorio";
+    } else if (transaccion.detalle.length < 3) {
+      nuevosErrores.detalle = "El detalle debe tener al menos 3 caracteres";
+    } else if (transaccion.detalle.length > 100) {
+      nuevosErrores.detalle = "El detalle no puede superar los 100 caracteres";
+    }
+
+
     // Validación de tipo de transacción
     if (!transaccion.tipo_transaccion) {
       nuevosErrores.tipo_transaccion = "Debe seleccionar un tipo de transacción";

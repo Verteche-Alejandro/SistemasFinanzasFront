@@ -92,7 +92,7 @@ const TableTransac = ({ transacciones, onActualizarCuentas }) => {
                             <td className="px-4 py-2">
                                 {formatearFecha(transaccion.fecha)}
                             </td>
-                            <td className='px-4 py-2'>
+                            <td className='px-4 py-2 text-center'>
                                 {transaccion.detalle}
                             </td>
                             <td className="px-4 py-2">

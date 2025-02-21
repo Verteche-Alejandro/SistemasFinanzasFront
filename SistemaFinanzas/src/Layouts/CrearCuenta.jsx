@@ -6,15 +6,18 @@ import { createCuenta, getCuentasByUsuarioId } from "../Services/Controllers/Cue
 
 const CrearCuenta = ({ isOpen, onClose, onGuardarCuenta }) => {
     const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState(false);
 
     const handleGuardar = async (cuentaData) => {
         setLoading(true);
         try {
             const response = await createCuenta(cuentaData);
             if (response?.message) {
+                setSuccess(true);
                 await actualizarCuentasEnSession();
                 setTimeout(() => {
                     onClose();
+                    setSuccess(false);
                 }, 2000);
             }
         } catch (err) {
@@ -45,6 +48,11 @@ const CrearCuenta = ({ isOpen, onClose, onGuardarCuenta }) => {
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} title="Crear Nueva Cuenta" width="w-96" className="mx-4">
+            {success && (
+                <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+                    Cuenta creada correctamente
+                </div>
+            )}
             <FormCuenta
                 onSubmit={handleGuardar}
                 onCancel={onClose}

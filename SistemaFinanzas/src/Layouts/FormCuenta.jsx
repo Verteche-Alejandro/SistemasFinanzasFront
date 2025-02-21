@@ -19,7 +19,6 @@ const FormCuenta = ({ cuenta, onSubmit, onCancel, loading, submitButtonText = "G
 
     const [formData, setFormData] = useState(estadoInicial);
     const [errores, setErrores] = useState({});
-    const [success, setSuccess] = useState(false);
 
     useEffect(() => {
         if (cuenta) {
@@ -184,8 +183,6 @@ const FormCuenta = ({ cuenta, onSubmit, onCancel, loading, submitButtonText = "G
         };
         try {
             await onSubmit(cuentaData);
-            setSuccess(true);
-            setTimeout(() => setSuccess(false), 2000);
         } catch (error) {
             setErrores(prevErrores => ({ ...prevErrores, api: "Error al guardar la cuenta" }));
         }
@@ -204,11 +201,6 @@ const FormCuenta = ({ cuenta, onSubmit, onCancel, loading, submitButtonText = "G
             {errores.general && (
                 <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
                     {errores.general}
-                </div>
-            )}
-            {success && (
-                <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-                    Cuenta creada correctamente
                 </div>
             )}
 
