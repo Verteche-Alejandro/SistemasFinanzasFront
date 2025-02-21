@@ -98,7 +98,7 @@ const Transacciones = () => {
 
     return (
         <Esquema>
-            <div className="p-4 space-y-4 md:p-6 md:space-y-6">
+            <div className="p-3 space-y-3 md:p-4 md:space-y-4 lg:p-5 lg:space-y-5">
                 {/* Header Section */}
                 <div className="border-b pb-4">
                     <h1 className="bg-gradient-to-r from-[#49bdc7] to-[#83d7dd] text-transparent bg-clip-text text-2xl md:text-3xl lg:text-4xl">

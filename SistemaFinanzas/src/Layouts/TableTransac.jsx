@@ -85,7 +85,7 @@ const TableTransac = ({ transacciones, onActualizarCuentas }) => {
 
     return (
         <div className="space-y-4">
-            <div className="flex justify-center items-center min-h-[400px]">
+            <div className="flex justify-center items-center min-h-[350px]">
                 <Table headers={headers}>
                     {transaccionesActuales.map((transaccion, index) => (
                         <tr key={index} className="hover:bg-gray-50">
