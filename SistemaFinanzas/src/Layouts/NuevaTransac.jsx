@@ -5,11 +5,19 @@ import { registrarTransaccion } from "../Services/Controllers/Transaccion";
 import ButtonForm from "../Components/Buttons/ButtonForm";
 import SelectForm from "../Components/Inputs/SelectForm";
 
-// Función para obtener la fecha local en formato YYYY-MM-DD
+// Función para obtener la fecha local
 const obtenerFechaLocal = () => {
-  const hoy = new Date();
-  hoy.setMinutes(hoy.getMinutes() - hoy.getTimezoneOffset());
-  return hoy.toISOString().slice(0, 10);
+  const fecha = new Date();
+  fecha.setDate(fecha.getDate()); // Aseguramos que sea el día actual
+  return fecha.toLocaleDateString('en-CA'); // Formato YYYY-MM-DD
+};
+
+// Función para convertir fecha a formato local
+const convertirAFechaLocal = (fechaString) => {
+  if (!fechaString) return '';
+  const fecha = new Date(fechaString);
+  fecha.setDate(fecha.getDate()); // Aseguramos que sea el día correcto
+  return fecha.toLocaleDateString('en-CA'); // Formato YYYY-MM-DD
 };
 
 const NuevaTransac = ({ isOpen, onClose, cuentas, onActualizarCuentas }) => {
@@ -76,28 +84,24 @@ const NuevaTransac = ({ isOpen, onClose, cuentas, onActualizarCuentas }) => {
       }
     }
 
-    // Validación de fecha:
-    // Construir la fecha como fecha local a partir del string recibido
-    const [year, month, day] = transaccion.fecha.split("-");
-    const fechaTransaccion = new Date(year, month - 1, day);
-    fechaTransaccion.setHours(0, 0, 0, 0);
+    // Validación modificada de fecha
+    if (transaccion.fecha) {
+      // Creamos la fecha usando la zona horaria local
+      const [year, month, day] = transaccion.fecha.split('-');
+      const fechaTransaccion = new Date(year, month - 1, day);
 
-    const fechaActual = new Date();
-    fechaActual.setHours(0, 0, 0, 0);
+      const fechaActual = new Date();
+      fechaActual.setHours(0, 0, 0, 0);
 
-    // Validar que no sea fecha futura
-    if (fechaTransaccion.getTime() > fechaActual.getTime()) {
-      nuevosErrores.fecha = "No se pueden registrar transacciones con fecha futura";
-    }
+      const fechaLimite = new Date();
+      fechaLimite.setMonth(fechaLimite.getMonth() - 1);
+      fechaLimite.setHours(0, 0, 0, 0);
 
-    // Crear fecha límite (1 mes atrás) en zona local
-    const fechaLimite = new Date();
-    fechaLimite.setMonth(fechaLimite.getMonth() - 1);
-    fechaLimite.setHours(0, 0, 0, 0);
-
-    // Validar que no sea más antigua que 1 mes
-    if (fechaTransaccion.getTime() < fechaLimite.getTime()) {
-      nuevosErrores.fecha = "No se pueden registrar transacciones con más de 30 días de antigüedad";
+      if (fechaTransaccion > fechaActual) {
+        nuevosErrores.fecha = "No se pueden registrar transacciones con fecha futura";
+      } else if (fechaTransaccion < fechaLimite) {
+        nuevosErrores.fecha = "No se pueden registrar transacciones con más de 30 días de antigüedad";
+      }
     }
 
     return nuevosErrores;
@@ -134,9 +138,14 @@ const NuevaTransac = ({ isOpen, onClose, cuentas, onActualizarCuentas }) => {
     }
 
     try {
+      const fechaSeleccionada = new Date(transaccion.fecha);
+      fechaSeleccionada.setDate(fechaSeleccionada.getDate() + 1); // Ajustamos la fecha
+      const fechaFormateada = fechaSeleccionada.toLocaleDateString('en-CA'); // Formato YYYY-MM-DD
+
       const datosTransaccion = {
         ...transaccion,
         monto: Number(transaccion.monto),
+        fecha: fechaFormateada,
         cuenta: { cuenta_id: Number(transaccion.cuenta.cuenta_id) },
         moneda: { moneda_id: Number(transaccion.moneda.moneda_id) }
       };
@@ -245,20 +254,16 @@ const NuevaTransac = ({ isOpen, onClose, cuentas, onActualizarCuentas }) => {
           name="fecha"
           value={transaccion.fecha}
           onChange={(e) => {
-            setTransaccion({ ...transaccion, fecha: e.target.value });
+            const fechaSeleccionada = e.target.value;
+            setTransaccion({ ...transaccion, fecha: fechaSeleccionada });
             setErrores(prev => ({ ...prev, fecha: "" }));
           }}
           min={(() => {
             const fechaMin = new Date();
             fechaMin.setMonth(fechaMin.getMonth() - 1);
-            fechaMin.setMinutes(fechaMin.getMinutes() - fechaMin.getTimezoneOffset());
-            return fechaMin.toISOString().slice(0, 10);
+            return convertirAFechaLocal(fechaMin.toISOString());
           })()}
-          max={(() => {
-            const hoy = new Date();
-            hoy.setMinutes(hoy.getMinutes() - hoy.getTimezoneOffset());
-            return hoy.toISOString().slice(0, 10);
-          })()}
+          max={obtenerFechaLocal()}
         />
         {errores.fecha && <p className="text-red-500 text-sm">{errores.fecha}</p>}
 
