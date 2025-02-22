@@ -33,10 +33,12 @@ const NuevaTransac = ({ isOpen, onClose, cuentas, onActualizarCuentas }) => {
   const [transaccion, setTransaccion] = useState(estadoInicial);
   const [errores, setErrores] = useState({});
   const [success, setSuccess] = useState(false);
+  const [saldoActual, setSaldoActual] = useState(null);
 
   const resetFormulario = () => {
     setTransaccion(estadoInicial);
     setErrores({});
+    setSaldoActual(null);
   };
 
   useEffect(() => {
@@ -45,12 +47,12 @@ const NuevaTransac = ({ isOpen, onClose, cuentas, onActualizarCuentas }) => {
 
   const validarFormulario = () => {
     let nuevosErrores = {};
+    const montoNumerico = Number(transaccion.monto);
 
     // Validación de monto
     if (!transaccion.monto) {
       nuevosErrores.monto = "El monto es obligatorio";
     } else {
-      const montoNumerico = Number(transaccion.monto);
       if (montoNumerico <= 0) {
         nuevosErrores.monto = "El monto debe ser mayor a 0";
       }
@@ -77,21 +79,15 @@ const NuevaTransac = ({ isOpen, onClose, cuentas, onActualizarCuentas }) => {
       nuevosErrores.tipo_transaccion = "Debe seleccionar un tipo de transacción";
     }
 
-    // Validación de cuenta
-    if (!transaccion.cuenta.cuenta_id) {
-      nuevosErrores.cuenta_id = "Debe seleccionar una cuenta";
-    } else {
+    if (
+      transaccion.cuenta.cuenta_id &&
+      ["Retiro", "Pago", "Transferencia"].includes(transaccion.tipo_transaccion)
+    ) {
       const cuentaSeleccionada = cuentas.find(
         (c) => c.cuenta_id === Number(transaccion.cuenta.cuenta_id)
       );
-      // Validación de saldo suficiente para retiros/pagos/transferencias
-      if (
-        cuentaSeleccionada &&
-        ["RETIRO", "PAGO", "TRANSFERENCIA"].includes(transaccion.tipo_transaccion)
-      ) {
-        if (Number(transaccion.monto) > cuentaSeleccionada.saldo) {
-          nuevosErrores.monto = "Saldo insuficiente en la cuenta";
-        }
+      if (cuentaSeleccionada && montoNumerico > cuentaSeleccionada.saldo) {
+        nuevosErrores.monto = `Saldo insuficiente. Saldo actual: ${formatearNumero(cuentaSeleccionada.saldo)}, Monto requerido: ${formatearNumero(montoNumerico)}`;
       }
     }
 
@@ -122,20 +118,64 @@ const NuevaTransac = ({ isOpen, onClose, cuentas, onActualizarCuentas }) => {
     const cuentaId = e.target.value;
     const cuentaSeleccionada = cuentas.find(c => c.cuenta_id === Number(cuentaId));
 
+    if (cuentaSeleccionada) {
+      setSaldoActual(cuentaSeleccionada.saldo);
+    } else {
+      setSaldoActual(null);
+    }
+
     setTransaccion({
       ...transaccion,
       cuenta: { cuenta_id: cuentaId },
       moneda: { moneda_id: cuentaSeleccionada ? cuentaSeleccionada.moneda.moneda_id : "" }
     });
-    setErrores(prev => ({ ...prev, cuenta_id: "" }));
+    setErrores(prev => ({ ...prev, cuenta_id: "", monto: "" }));
   };
 
   const handleMontoChange = (e) => {
     const valor = e.target.value;
-    // Solo permite números y un punto decimal
     if (valor === "" || /^\d*\.?\d{0,2}$/.test(valor)) {
       setTransaccion({ ...transaccion, monto: valor });
-      setErrores(prev => ({ ...prev, monto: "" }));
+
+      // Validación en tiempo real del saldo
+      if (
+        saldoActual !== null &&
+        ["Retiro", "Pago", "Transferencia"].includes(transaccion.tipo_transaccion)
+      ) {
+        const montoNumerico = Number(valor);
+        if (montoNumerico > saldoActual) {
+          setErrores(prev => ({
+            ...prev,
+            monto: `Saldo insuficiente. Saldo actual: ${formatearNumero(saldoActual)}, Monto requerido: ${formatearNumero(montoNumerico)}`
+          }));
+        } else {
+          setErrores(prev => ({ ...prev, monto: "" }));
+        }
+      } else {
+        setErrores(prev => ({ ...prev, monto: "" }));
+      }
+    }
+  };
+
+  const handleTipoTransaccionChange = (e) => {
+    const nuevoTipo = e.target.value;
+    setTransaccion({ ...transaccion, tipo_transaccion: nuevoTipo });
+
+    // Validar saldo cuando se cambia el tipo de transacción
+    if (
+      saldoActual !== null &&
+      ["Retiro", "Pago", "Transferencia"].includes(nuevoTipo) &&
+      transaccion.monto
+    ) {
+      const montoNumerico = Number(transaccion.monto);
+      if (montoNumerico > saldoActual) {
+        setErrores(prev => ({
+          ...prev,
+          monto: `Saldo insuficiente. Saldo actual: ${formatearNumero(saldoActual)}, Monto requerido: ${formatearNumero(montoNumerico)}`
+        }));
+      } else {
+        setErrores(prev => ({ ...prev, tipo_transaccion: "" }));
+      }
     }
   };
 
@@ -233,10 +273,7 @@ const NuevaTransac = ({ isOpen, onClose, cuentas, onActualizarCuentas }) => {
             titleOption="Seleccione un tipo"
             name="tipo_transaccion"
             value={transaccion.tipo_transaccion}
-            onChange={(e) => {
-              setTransaccion({ ...transaccion, tipo_transaccion: e.target.value });
-              setErrores(prev => ({ ...prev, tipo_transaccion: "" }));
-            }}
+            onChange={handleTipoTransaccionChange}
             options={[
               { value: "Cobro", label: "Cobro" },
               { value: "Deposito", label: "Deposito" },
