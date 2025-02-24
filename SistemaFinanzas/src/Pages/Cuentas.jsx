@@ -138,6 +138,11 @@ const Cuentas = () => {
             return false;
         }
 
+        if (montoNumerico < 500000) {
+            setErroresAlarma("El monto minimo es de 500.000 ");
+            return false;
+        }
+
         if (montoNumerico > 1000000000) {
             setErroresAlarma("El monto no puede ser mayor a 1.000.000.000");
             return false;

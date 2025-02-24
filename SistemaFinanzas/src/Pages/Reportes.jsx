@@ -74,7 +74,7 @@ const Reportes = () => {
                                     {cuenta.moneda.simbolo} {cuenta.moneda.nombre}
                                 </p>
                             </div>
-                            <div className="h-[50vh] w-full">
+                            <div className="h-[60vh] w-full">
                                 <ReporteTransac cuenta_id={cuenta.cuenta_id} />
                             </div>
                         </div>

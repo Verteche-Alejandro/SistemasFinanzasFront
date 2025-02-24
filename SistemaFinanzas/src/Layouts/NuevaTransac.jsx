@@ -79,6 +79,11 @@ const NuevaTransac = ({ isOpen, onClose, cuentas, onActualizarCuentas }) => {
       nuevosErrores.tipo_transaccion = "Debe seleccionar un tipo de transacción";
     }
 
+    // Validación de cuenta (y por ende, de moneda)
+    if (!transaccion.cuenta.cuenta_id) {
+      nuevosErrores.cuenta_id = "Debe seleccionar una cuenta";
+    }
+
     if (
       transaccion.cuenta.cuenta_id &&
       ["Retiro", "Pago", "Transferencia"].includes(transaccion.tipo_transaccion)
@@ -91,8 +96,10 @@ const NuevaTransac = ({ isOpen, onClose, cuentas, onActualizarCuentas }) => {
       }
     }
 
-    // Validación modificada de fecha
-    if (transaccion.fecha) {
+    // Validación de fecha
+    if (!transaccion.fecha) {
+      nuevosErrores.fecha = "La fecha es obligatoria";
+    } else {
       // Creamos la fecha usando la zona horaria local
       const [year, month, day] = transaccion.fecha.split('-');
       const fechaTransaccion = new Date(year, month - 1, day);
