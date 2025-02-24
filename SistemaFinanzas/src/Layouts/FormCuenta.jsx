@@ -90,10 +90,10 @@ const FormCuenta = ({ cuenta, onSubmit, onCancel, loading, submitButtonText = "G
                         saldo: "El saldo no puede ser menor a 5.000"
                     }));
                 } else if (saldoNumerico > 1000000000) {
-                    console.log("Error: El saldo supera el límite de 1.000.000.000");
+                    console.log("Error: El saldo supera el límite de 10.000.000");
                     setErrores(prevErrores => ({
                         ...prevErrores,
-                        saldo: "El saldo no puede superar 1.000.000.000"
+                        saldo: "El saldo no puede superar 10.000.000"
                     }));
                 }
 
