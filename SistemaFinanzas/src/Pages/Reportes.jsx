@@ -25,10 +25,7 @@ const Reportes = () => {
                 }
 
                 const response = await getCuentasByUsuarioId(id);
-                if (!response || !Array.isArray(response) || response.length === 0) {
-                    throw new Error("No se pudieron obtener las cuentas");
-                }
-
+                
                 sessionStorage.setItem("cuentasUsuario", JSON.stringify(response));
                 setCuentas(response);
             } catch (error) {

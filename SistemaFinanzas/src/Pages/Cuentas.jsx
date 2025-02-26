@@ -348,6 +348,14 @@ const Cuentas = () => {
                                 </div>
                             </div>
                         ))}
+                        {cuentas.length === 0 && (
+                            <div className="text-center py-12 bg-white rounded-lg shadow-sm">
+                                <div className="space-y-3">
+                                    <p className="text-gray-500 text-lg">No hay cuentas disponibles</p>
+                                    <p className="text-gray-400">Crea tu primera cuenta</p>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
