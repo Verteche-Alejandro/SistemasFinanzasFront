@@ -14,20 +14,20 @@ export async function POST(url, data) {
             body: JSON.stringify(data)
         });
 
-        // Para respuestas no exitosas, intentar obtener el mensaje de error
+
         if (!response.ok) {
             const errorData = await response.text();
-            // Intentar parsear como JSON si es posible
+
             try {
                 const jsonError = JSON.parse(errorData);
                 throw { status: response.status, message: jsonError.message || errorData };
             } catch (e) {
-                // Si no es JSON, usar el texto directamente
+
                 throw { status: response.status, message: errorData };
             }
         }
 
-        // Para respuestas exitosas
+
         const jsonResponse = await response.json();
         return jsonResponse;
     } catch (error) {
@@ -90,10 +90,10 @@ export async function PATCH(url, data) {
             body: JSON.stringify(data)
         });
 
-        // Primero obtenemos la respuesta en JSON
+
         const responseData = await response.json();
 
-        // Verificamos si la respuesta no fue exitosa
+
         if (!response.ok) {
             throw {
                 status: response.status,

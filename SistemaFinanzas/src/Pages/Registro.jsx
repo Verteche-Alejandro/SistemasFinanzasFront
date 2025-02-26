@@ -28,7 +28,6 @@ const RegistroUsuario = () => {
             confirmarClave: ""
         };
 
-        // Validar campos vacíos
         if (!dataToValidate.usuario || !dataToValidate.email || !dataToValidate.confirmarEmail ||
             !dataToValidate.clave || !dataToValidate.confirmarClave) {
             nuevoErrores.general = "Todos los campos son obligatorios";
@@ -36,7 +35,6 @@ const RegistroUsuario = () => {
             return false;
         }
 
-        // Validar longitud del nombre de usuario
         if (dataToValidate.usuario.length < 3 || dataToValidate.usuario.length > 20) {
             nuevoErrores.usuario = "El nombre de usuario debe tener entre 3 y 20 caracteres";
         }
@@ -45,29 +43,24 @@ const RegistroUsuario = () => {
             nuevoErrores.usuario = "El nombre de usuario no puede contener solo números";
         }
 
-        // Validar formato de email
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(dataToValidate.email)) {
             nuevoErrores.email = "El formato del correo electrónico no es válido";
         }
 
-        // Validar que los emails coincidan
         if (dataToValidate.email !== dataToValidate.confirmarEmail) {
             nuevoErrores.confirmarEmail = "Los correos electrónicos no coinciden";
         }
 
-        // Validar contraseña
         const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
         if (!passwordRegex.test(dataToValidate.clave)) {
             nuevoErrores.clave = "La contraseña debe tener al menos 8 caracteres, incluyendo letras y números";
         }
 
-        // Validar que las contraseñas coincidan
         if (dataToValidate.clave !== dataToValidate.confirmarClave) {
             nuevoErrores.confirmarClave = "Las contraseñas no coinciden";
         }
 
-        // Verificar si hay algún error
         const hayErrores = Object.values(nuevoErrores).some(error => error !== "");
 
         if (mostrarError) {
@@ -80,7 +73,6 @@ const RegistroUsuario = () => {
     const Registrar = async (e) => {
         e.preventDefault();
         try {
-            // Limpiar error previo
             setErrores({
                 general: "",
                 usuario: "",
@@ -90,12 +82,11 @@ const RegistroUsuario = () => {
                 confirmarClave: ""
             });
 
-            // Validar formulario
             if (!validarFormulario()) {
                 return;
             }
 
-            // Preparar datos para enviar
+           
             const datosRegistro = {
                 usuario: data.usuario.trim(),
                 email: data.email.trim(),
@@ -113,7 +104,6 @@ const RegistroUsuario = () => {
 
             const errorMessage = error.message;
 
-            // Manejar los diferentes tipos de errores
             if (errorMessage.includes("usuario ya está en uso")) {
                 setErrores(prev => ({
                     ...prev,
@@ -135,7 +125,6 @@ const RegistroUsuario = () => {
 
     const handleInputChange = useCallback((field, value) => {
         setData(prev => ({ ...prev, [field]: value }));
-        // Limpiar solo el error específico del campo
         if (errores[field]) {
             setErrores(prev => ({
                 ...prev,

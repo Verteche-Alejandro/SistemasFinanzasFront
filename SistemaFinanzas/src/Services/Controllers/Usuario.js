@@ -18,12 +18,10 @@ export const updateUsuario = async (usuario_id, data) => {
             throw new Error("No se recibió respuesta del servidor");
         }
 
-        // Retornamos la respuesta completa
         return response;
     } catch (error) {
         console.error("Error en la solicitud PATCH en usuario:", error);
 
-        // Reformateamos el error para mantener consistencia
         if (error.status === 409) {
             throw {
                 status: 409,

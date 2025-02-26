@@ -1,4 +1,3 @@
-// CrearCuenta.jsx
 import { useState } from "react";
 import Modal from "../Components/Modals/Modal";
 import FormCuenta from "./FormCuenta";

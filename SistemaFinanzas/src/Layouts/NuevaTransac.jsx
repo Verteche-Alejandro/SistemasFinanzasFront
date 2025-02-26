@@ -49,7 +49,6 @@ const NuevaTransac = ({ isOpen, onClose, cuentas, onActualizarCuentas }) => {
     let nuevosErrores = {};
     const montoNumerico = Number(transaccion.monto);
 
-    // Validación de monto
     if (!transaccion.monto) {
       nuevosErrores.monto = "El monto es obligatorio";
     } else {
@@ -64,7 +63,7 @@ const NuevaTransac = ({ isOpen, onClose, cuentas, onActualizarCuentas }) => {
       }
     }
 
-    // Validación de detalle
+    
     if (!transaccion.detalle.trim()) {
       nuevosErrores.detalle = "El detalle es obligatorio";
     } else if (transaccion.detalle.length < 3) {
@@ -74,12 +73,11 @@ const NuevaTransac = ({ isOpen, onClose, cuentas, onActualizarCuentas }) => {
     }
 
 
-    // Validación de tipo de transacción
+
     if (!transaccion.tipo_transaccion) {
       nuevosErrores.tipo_transaccion = "Debe seleccionar un tipo de transacción";
     }
 
-    // Validación de cuenta (y por ende, de moneda)
     if (!transaccion.cuenta.cuenta_id) {
       nuevosErrores.cuenta_id = "Debe seleccionar una cuenta";
     }
@@ -96,11 +94,9 @@ const NuevaTransac = ({ isOpen, onClose, cuentas, onActualizarCuentas }) => {
       }
     }
 
-    // Validación de fecha
     if (!transaccion.fecha) {
       nuevosErrores.fecha = "La fecha es obligatoria";
     } else {
-      // Creamos la fecha usando la zona horaria local
       const [year, month, day] = transaccion.fecha.split('-');
       const fechaTransaccion = new Date(year, month - 1, day);
 
@@ -144,7 +140,6 @@ const NuevaTransac = ({ isOpen, onClose, cuentas, onActualizarCuentas }) => {
     if (valor === "" || /^\d*\.?\d{0,2}$/.test(valor)) {
       setTransaccion({ ...transaccion, monto: valor });
 
-      // Validación en tiempo real del saldo
       if (
         saldoActual !== null &&
         ["Retiro", "Pago", "Transferencia"].includes(transaccion.tipo_transaccion)
@@ -168,7 +163,6 @@ const NuevaTransac = ({ isOpen, onClose, cuentas, onActualizarCuentas }) => {
     const nuevoTipo = e.target.value;
     setTransaccion({ ...transaccion, tipo_transaccion: nuevoTipo });
 
-    // Validar saldo cuando se cambia el tipo de transacción
     if (
       saldoActual !== null &&
       ["Retiro", "Pago", "Transferencia"].includes(nuevoTipo) &&

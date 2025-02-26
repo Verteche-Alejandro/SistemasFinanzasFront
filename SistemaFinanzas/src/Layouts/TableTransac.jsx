@@ -27,7 +27,7 @@ const TableTransac = ({ transacciones, onActualizarCuentas }) => {
         setCurrentPage(1); // Reset a la primera página cuando cambian las transacciones
     }, [transacciones]);
 
-    // Si no hay transacciones, mostrar mensaje en lugar de la tabla
+    
     if (!transaccionesFiltradas || transaccionesFiltradas.length === 0) {
         return (
             <div className="text-center py-12 bg-white rounded-lg shadow-sm min-h-[400px] flex items-center justify-center">

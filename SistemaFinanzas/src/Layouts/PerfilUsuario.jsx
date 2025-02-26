@@ -64,19 +64,16 @@ const PerfilUsuario = ({ info }) => {
 
         let esValido = true;
 
-        // Validar campos vacíos
         if (!formData.nuevoNombre.trim() || !formData.nuevoCorreo.trim()) {
             nuevoErrores.general = "Todos los campos son obligatorios";
             esValido = false;
         }
 
-        // Validar longitud del nombre de usuario
         if (formData.nuevoNombre.trim().length < 3 || formData.nuevoNombre.trim().length > 20) {
             nuevoErrores.nuevoNombre = "El nombre de usuario debe tener entre 3 y 20 caracteres";
             esValido = false;
         }
 
-        // Validar formato de email
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(formData.nuevoCorreo.trim())) {
             nuevoErrores.nuevoCorreo = "El formato del correo electrónico no es válido";
@@ -96,20 +93,17 @@ const PerfilUsuario = ({ info }) => {
 
         let esValido = true;
 
-        // Validar campos vacíos
         if (!formData.nuevaContraseña || !formData.confirmarContraseña) {
             nuevoErrores.general = "Todos los campos son obligatorios";
             esValido = false;
         }
 
-        // Validar contraseña
         const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
         if (!passwordRegex.test(formData.nuevaContraseña)) {
             nuevoErrores.nuevaContraseña = "La contraseña debe tener al menos 8 caracteres, incluyendo letras y números";
             esValido = false;
         }
 
-        // Validar que las contraseñas coincidan
         if (formData.nuevaContraseña !== formData.confirmarContraseña) {
             nuevoErrores.confirmarContraseña = "Las contraseñas no coinciden";
             esValido = false;
@@ -121,7 +115,7 @@ const PerfilUsuario = ({ info }) => {
 
     const handleModalToggle = useCallback((modalName, value) => {
         setModals(prev => ({ ...prev, [modalName]: value }));
-        // Resetear errores y form data cuando se cierra el modal
+        
         if (!value) {
             setErrores({
                 nuevoNombre: "",
@@ -140,7 +134,6 @@ const PerfilUsuario = ({ info }) => {
 
     const handleInputChange = useCallback((field, value) => {
         setFormData(prev => ({ ...prev, [field]: value }));
-        // Limpiar error específico del campo
         setErrores(prev => ({ ...prev, [field]: "", general: "" }));
     }, []);
 
@@ -156,7 +149,6 @@ const PerfilUsuario = ({ info }) => {
                 return;
             }
 
-            // Verificar si realmente hay cambios
             if (formData.nuevoNombre === usuario.usuario &&
                 formData.nuevoCorreo === usuario.email) {
                 handleModalToggle('editando', false);
@@ -196,7 +188,6 @@ const PerfilUsuario = ({ info }) => {
 
     const cambiarContraseña = useCallback(async () => {
         try {
-            // Limpiar errores previos
             setErrores({
                 nuevoNombre: "",
                 nuevoCorreo: "",
@@ -205,7 +196,6 @@ const PerfilUsuario = ({ info }) => {
                 general: ""
             });
 
-            // Validar formulario
             if (!validarFormularioContraseña()) {
                 return;
             }

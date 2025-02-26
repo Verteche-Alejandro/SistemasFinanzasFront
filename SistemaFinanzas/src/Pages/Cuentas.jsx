@@ -47,7 +47,6 @@ const Cuentas = () => {
         });
     };
 
-    // Modificar la función eliminarCuenta para incluir el ID
     const eliminarCuenta = async (id) => {
         try {
             const response = await deleteCuenta(id);
@@ -155,8 +154,6 @@ const Cuentas = () => {
     const handleTempMontoAlarmaChange = (e) => {
         const valor = e.target.value;
         setTempMontoAlarma(valor);
-
-        // Limpiar error al cambiar el valor
         if (erroresAlarma) {
             setErroresAlarma('');
         }
@@ -223,7 +220,7 @@ const Cuentas = () => {
 
     return (
         <Esquema>
-            {/* Contenedor principal con h-screen y overflow-auto */}
+            {/* Contenedor principal */}
             <div className="h-screen overflow-auto">
                 <div className="flex flex-col p-6 justify-center items-center">
                     <div className="flex justify-center items-center mb-8">

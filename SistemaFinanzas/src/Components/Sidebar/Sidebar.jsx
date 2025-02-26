@@ -12,7 +12,6 @@ function Sidebar({ logo, links, isOpen, toggleSidebar }) {
 
     return (
         <div>
-            {/* Overlay */}
             <div className={`fixed inset-0 bg-[#133039] opacity-30 z-30 ${isOpen ? 'block' : 'hidden'}`} onClick={toggleSidebar} />
             {/* Sidebar */}
             <div className={`fixed h-full flex flex-col bg-gradient-to-b from-[#254954] to-[#133039] 
@@ -35,9 +34,9 @@ function Sidebar({ logo, links, isOpen, toggleSidebar }) {
                                         hover:bg-[#276a77]/30 hover:text-[#83d7dd]
                                         focus:bg-[#276a77]/50 focus:text-[#b5e8ec]
                                         active:bg-[#276a77]">
-                            <div className="flex flex-row items-center justify-center gap-2"> {/* Aquí se agrega un flex para alinear el ícono y el texto */}
-                                {link.icono}  {/* El ícono estará a la izquierda */}
-                                {link.text}   {/* El texto a la derecha del ícono */}
+                            <div className="flex flex-row items-center justify-center gap-2">
+                                {link.icono}
+                                {link.text} 
                             </div>
                         </a>
                     ))}

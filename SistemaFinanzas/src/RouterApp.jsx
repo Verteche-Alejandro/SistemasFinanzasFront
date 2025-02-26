@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import RoutesPages from "./Layouts/RoutesPages";
 
-// Pages
 import Login from "./Pages/Login";
 import Principal from "./Pages/Principal";
 import Transacciones from "./Pages/Transacciones";
@@ -10,7 +9,6 @@ import Reportes from "./Pages/Reportes";
 import Perfil from "./Pages/Perfil";
 import RegistroUsuario from "./Pages/Registro";
 
-// Componente para rutas protegidas
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem("token");
   return token ? children : <Navigate to="/login" replace />;

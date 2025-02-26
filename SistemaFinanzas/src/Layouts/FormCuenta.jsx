@@ -1,4 +1,3 @@
-// FormularioCuenta.jsx
 import { useState, useEffect } from "react";
 import InputForm from "../Components/Inputs/InputForm";
 import ButtonForm from "../Components/Buttons/ButtonForm";
@@ -73,14 +72,14 @@ const FormCuenta = ({ cuenta, onSubmit, onCancel, loading, submitButtonText = "G
             }
 
             if (name === "saldo") {
-                console.log("Saldo ingresado:", value); // Verifica el valor ingresado
+                console.log("Saldo ingresado:", value);
 
-                if (value === '') return { ...prev, saldo: '' }; // Permitir borrar el campo
+                if (value === '') return { ...prev, saldo: '' };
 
                 const saldoNumerico = parseFloat(value);
                 if (isNaN(saldoNumerico)) {
                     console.log("Error: El saldo no es un número válido");
-                    return { ...prev, saldo: value }; // Permitir escribir aunque sea incorrecto
+                    return { ...prev, saldo: value };
                 }
 
                 if (saldoNumerico < 5000) {
@@ -97,7 +96,7 @@ const FormCuenta = ({ cuenta, onSubmit, onCancel, loading, submitButtonText = "G
                     }));
                 }
 
-                return { ...prev, saldo: value }; // Siempre actualizar saldo
+                return { ...prev, saldo: value };
             }
 
             if (name === "moneda_id") {
@@ -148,9 +147,8 @@ const FormCuenta = ({ cuenta, onSubmit, onCancel, loading, submitButtonText = "G
             nuevosErrores.moneda_id = "Debe seleccionar una moneda";
         }
 
-        // Validación del saldo para creación y edición
         const saldoNumerico = parseFloat(formData.saldo);
-        if (isNaN(saldoNumerico) || saldoNumerico < 5000) {  // Cambiado aquí
+        if (isNaN(saldoNumerico) || saldoNumerico < 5000) {
             nuevosErrores.saldo = "El saldo debe ser mayor o igual a 5.000";
         }
 
@@ -221,7 +219,7 @@ const FormCuenta = ({ cuenta, onSubmit, onCancel, loading, submitButtonText = "G
                     name="tipoDeCuenta"
                     value={formData.tipoDeCuenta}
                     onChange={handleInputChange}
-                    disabled={isEditing ? false : !!cuenta} // Modificado
+                    disabled={isEditing ? false : !!cuenta}
                     options={["Ahorro", "Corriente"]}
                 />
                 {errores.tipoDeCuenta && <p className="text-red-500 text-sm">{errores.tipoDeCuenta}</p>}
@@ -248,8 +246,8 @@ const FormCuenta = ({ cuenta, onSubmit, onCancel, loading, submitButtonText = "G
                 value={formData.saldo}
                 onChange={handleInputChange}
                 placeholder="Saldo inicial"
-                disabled={!isEditing && !!cuenta}  // Permite editar cuando isEditing es true
-                min="5000"  // Agregado el mínimo
+                disabled={!isEditing && !!cuenta} 
+                min="5000" 
                 step="0.01"
             />
             {errores.saldo && <p className="text-red-500 text-sm">{errores.saldo}</p>}
