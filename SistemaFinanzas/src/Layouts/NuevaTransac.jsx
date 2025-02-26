@@ -56,7 +56,7 @@ const NuevaTransac = ({ isOpen, onClose, cuentas, onActualizarCuentas }) => {
         nuevosErrores.monto = "El monto debe ser mayor a 0";
       }
       if (montoNumerico > 10000000) {
-        nuevosErrores.monto = "El monto no puede superar 1,000,000";
+        nuevosErrores.monto = "El monto no puede superar 10,000,000";
       }
       if (!Number.isInteger(montoNumerico * 100)) {
         nuevosErrores.monto = "El monto no puede tener más de 2 decimales";
